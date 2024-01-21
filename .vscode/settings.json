@@ -1,6 +1,37 @@
 {
-    "cSpell.words": [
-        "flowbite"
-    ],
-    "javascript.validate.enable": false
+	"cSpell.words": [
+		"flowbite"
+	],
+	"eslint.validate": [
+		"javascript",
+		"typescript",
+		"svelte"
+	],
+	"eslint.probe": [
+		"javascript",
+		"typescript",
+		"svelte"
+	],
+	"eslint.format.enable": true,
+	"eslint.codeAction.showDocumentation": {
+		"enable": true
+	},
+	"typescript.validate.enable": true,
+	"javascript.validate.enable": true,
+	"svelte.plugin.svelte.format.enable": true,
+	"svelte.plugin.svelte.format.config.svelteSortOrder": "options-markup-styles-scripts",
+	"svelte.plugin.css.completions.enable": true,
+	"svelte.plugin.css.diagnostics.enable": true,
+	"svelte.plugin.svelte.diagnostics.enable": true,
+	"svelte.plugin.typescript.diagnostics.enable": true,
+	"[svelte]": {
+		"editor.defaultFormatter": "svelte.svelte-vscode",
+		"validate.enable": true
+	},
+	"editor.showUnused": true,
+	"editor.formatOnSave": true,
+	"cSpell.enabled": false,
+	"typescript.inlayHints.enumMemberValues.enabled": true,
+	"typescript.inlayHints.functionLikeReturnTypes.enabled": true,
+	"typescript.inlayHints.parameterNames.enabled": "all"
 }
