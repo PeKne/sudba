@@ -1,39 +1,35 @@
 <script lang="ts">
-	import {
-		AccordionItem,
-		Heading,
-		Input,
-		Label,
-	} from 'flowbite-svelte';
+	import { AccordionItem, Heading, Input, Label } from 'flowbite-svelte';
+
+	import { activeCaseStore } from '../caseStore';
 
 	let offenderCount = 1;
-	let offenderNames : string[] = [];
+	let offenderNames: string[] = [];
 	let offendersAccordionHeader = '';
 	let offenderNamesInputLabel: string;
 
 	$: offendersAccordionHeader = `Informace o pachatel${offenderCount > 1 ? 'ích' : 'i'}`;
 	$: offenderNamesInputLabel = offenderCount > 1 ? 'Jména pachatelů' : 'Jméno pachatele';
-
-	// $: {
-	// 	offenderNames = Array.from({ length: offenderCount }, (item, index) => index);
-	// 	console.log(offenderNames);
-	// }
-
 </script>
 
 <AccordionItem open>
-		<span slot="header"><Heading tag="h5">{offendersAccordionHeader}</Heading></span>
-
-		<form>
-			<div>
-				<div class="grid gap-6 md:grid-cols-2">
+	<span slot="header"><Heading tag="h5">{offendersAccordionHeader}</Heading></span>
+	s
+	<form>
+		<div>
+			<div class="grid gap-6 md:grid-cols-2">
 				<div class="space-y-2">
 					<Label for="offender">{offenderNamesInputLabel}</Label>
-						<Input id="offender" placeholder="jméno pachatele" required />
+					<Input
+						id="offender"
+						placeholder="jméno pachatele"
+						required
+						bind:value={$activeCaseStore.offender.name}
+					/>
 				</div>
 			</div>
-			</div>
-			<!-- <div class="grid gap-6 md:grid-cols-2">
+		</div>
+		<!-- <div class="grid gap-6 md:grid-cols-2">
 				<div class="space-y-2">
 					<Label for="visitors">Počet pachatelů</Label>
 					<Input type="number" id="visitors" min={'1'} bind:value={offenderCount} required />
@@ -47,5 +43,5 @@
 					</div>
 				</div>
 			</div> -->
-		</form>
+	</form>
 </AccordionItem>
