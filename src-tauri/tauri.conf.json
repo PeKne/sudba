@@ -8,7 +8,7 @@
 	},
 	"package": {
 		"productName": "sudba",
-		"version": "0.1.0"
+		"version": "../package.json"
 	},
 	"tauri": {
 		"allowlist": {
@@ -22,7 +22,7 @@
 		},
 		"bundle": {
 			"active": true,
-			"category": "DeveloperTool",
+			"category": "Productivity",
 			"copyright": "",
 			"deb": {
 				"depends": []
@@ -35,7 +35,7 @@
 				"icons/icon.icns",
 				"icons/icon.ico"
 			],
-			"identifier": "com.tauri.dev",
+			"identifier": "com.pekne.sudba",
 			"longDescription": "",
 			"macOS": {
 				"entitlements": null,
@@ -61,11 +61,12 @@
 		},
 		"windows": [
 			{
-				"fullscreen": false,
-				"height": 600,
-				"resizable": true,
 				"title": "Sudba",
-				"width": 800
+				"fullscreen": false,
+				"center": true,
+				"height": 1200,
+				"resizable": true,
+				"width": 1200
 			}
 		]
 	}

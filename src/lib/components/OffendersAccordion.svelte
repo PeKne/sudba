@@ -13,8 +13,7 @@
 </script>
 
 <AccordionItem open>
-	<span slot="header"><Heading tag="h5">{offendersAccordionHeader}</Heading></span>
-	s
+	<span slot="header"><Heading tag="h5">{offendersAccordionHeader}:</Heading></span>
 	<form>
 		<div>
 			<div class="grid gap-6 md:grid-cols-2">
