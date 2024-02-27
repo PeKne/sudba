@@ -16,8 +16,6 @@
 
 	export let wasSentenced = false;
 	export let crimes: Crime[] = [];
-
-	$: console.log('CrimesTable.svelte', { wasSentenced, crimes });
 	$: sortFunction = wasSentenced ? activeCaseStore.sortSentencedCrimes : activeCaseStore.sortCrimes;
 	$: header = wasSentenced ? 'Odsouzené skutky' : 'Skutky k odsouzení';
 

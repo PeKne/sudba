@@ -8,7 +8,6 @@
 	import ValidatedSelect from '../atoms/ValidatedSelect.svelte';
 
 	export let sentence: Sentence;
-	console.log('🚀 ~ sentence:', sentence.dateAnnounced);
 	export let sentenceIndex: number;
 
 	const handleRemoveSentence = (index: number) => {
@@ -33,14 +32,11 @@
 			}))
 	];
 
-	$: console.log('🚀 ~ sentenceOptions:', sentence.cancelsSentece);
-
 	$: errors = $formErrorsStore.sentences[sentence.id] ?? {};
 
 	const handleCanceledSentenceChange = (event: Event) => {
 		const input = event.target as HTMLInputElement;
 		const value = input.value as SentenceId;
-		console.log('🚀 ~ handleCanceledSentenceChange ~ value:', value);
 
 		if (value === 'X') {
 			sentence.cancelsSentece = undefined;
@@ -52,7 +48,6 @@
 	const handleChangeCrimes = (event: Event) => {
 		const input = event.target as HTMLInputElement;
 		const value = input.value as SentenceId;
-		console.log('🚀 ~ handleCanceledSentenceChange ~ value:', value);
 
 		if (value === 'X') {
 			sentence.cancelsSentece = undefined;

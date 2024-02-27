@@ -14,10 +14,7 @@
 	import SentenceTableRow from './Table/SentenceTableRow.svelte';
 	import { PlusSolid } from 'flowbite-svelte-icons';
 
-	$: console.log($activeCaseStore.sentences.length);
-
 	const handleAddSentence = () => {
-		console.log('ADDING NEW');
 		$activeCaseStore.sentences = [...$activeCaseStore.sentences, createEmptySentence()];
 	};
 </script>

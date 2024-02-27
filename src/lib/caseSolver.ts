@@ -23,8 +23,6 @@ const getConnectedSenteces = (
 	let nextSentence = sentences.find((s) => s.id === sentenceId);
 	while (G.isNotNullable(nextSentence)) {
 		result.push(nextSentence);
-		console.log('🚀 ~ result:', result);
-
 		nextSentence = sentences.find((s) => s.cancelsSentece === nextSentence?.id);
 	}
 
@@ -47,7 +45,6 @@ const formatResultLevelMessage = (levelType: ResultType, caseLevel?: CaseResultL
 	const areSentencesPlural = A.length(canceledSentences ?? []) > 1;
 
 	const stringifiedSentences = canceledSentences?.map((s) => s.label).join(', ') ?? '';
-	console.log('🚀 ~ formatResultLevelMessage ~ sentenceCrimes:', sentenceCrimes);
 	const joinedCrimes = A.isNotEmpty(sentenceCrimes) ? A.concat(sentenceCrimes, crimes) : crimes;
 
 	const formattedCrimes = joinedCrimes.map((crime) => crime.label ?? 'UNDEFINED').join(', ');
@@ -86,10 +83,6 @@ export const getResultLevels = (inputCase: ResultCaseStore): string[] => {
 
 export const calculateCaseResult = (inputCase: ResultCaseStore): CaseResult | null => {
 	const { crimes, sentences } = inputCase;
-	console.log(
-		'🚀 ~ calculateCaseResult ~ sentences:',
-		sentences.map((s) => s.cancelsSentece)
-	);
 	const sentencesCopy = [...sentences];
 
 	const result: CaseResult = {
