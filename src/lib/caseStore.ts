@@ -17,10 +17,12 @@ export const generateSentenceId = (): CrimeId => uuid4() as CrimeId;
 
 export const createEmptyCrime = (): Crime => ({ id: uuid4() as CrimeId });
 export const createEmptySentence = (): Sentence => ({
-	id: uuid4() as SentenceId
+	id: uuid4() as SentenceId,
+	isLegallyForced: false,
+	crimes: []
 });
 
-const defaultCaseValue: Case = {
+export const defaultCaseValue: Case = {
 	fileId: '',
 	offender: {
 		name: ''
@@ -70,6 +72,14 @@ const createCaseStore = () => {
 };
 
 export const activeCaseStore = createCaseStore();
+
+export const lastSavedState = writable(JSON.stringify(defaultCaseValue));
+export const isUnsavedStore = derived(
+	[activeCaseStore, lastSavedState, time],
+	([$activeCase, $lastSavedState]) => {
+		return JSON.stringify($activeCase) !== $lastSavedState;
+	}
+);
 
 export const resultActiveCaseStore = derived([activeCaseStore, time], ([$activeCase]) => {
 	const sentencedCrimes = $activeCase.sentencedCrimes.map((crime, index) => ({
@@ -123,9 +133,7 @@ const validateSentences = (sentences: ResultSentence[]) => {
 		}
 
 		if (cancelsSentenceData && cancelsSentenceData.dateAnnounced) {
-			console.log(new Date(dateAnnounced), new Date(cancelsSentenceData.dateAnnounced));
 			if (dateAnnounced && new Date(dateAnnounced) < new Date(cancelsSentenceData.dateAnnounced)) {
-				console.log('HERERERE!!!');
 				sentenceErrors[
 					sentence.id
 				].cancelsSentece = `Datum zrušení nesmí být dříve než datum vyhlášení rozsudku ${cancelsSentenceData.label}.`;

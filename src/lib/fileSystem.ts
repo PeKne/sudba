@@ -4,11 +4,13 @@ import { readTextFile } from '@tauri-apps/api/fs';
 
 import { get } from 'svelte/store';
 
-import { activeCaseStore } from './caseStore';
+import { activeCaseStore, isUnsavedStore, lastSavedState } from './caseStore';
 import { S } from '@mobily/ts-belt';
 
 // TODO: check if there are unsaved changes first, if yes offer save
 export const confirmUnsavedChanges = async () => {
+	if (!get(isUnsavedStore)) return true;
+
 	return await ask(
 		"Pokud stisknete 'Ano', přijdete o všechny neuložené změny. Chcete pokračovat?",
 		{
@@ -44,7 +46,10 @@ export const readCaseFromFile = async () => {
 		}
 
 		const fileContent = (await readTextFile(selectedPath as string)) ?? null;
-		activeCaseStore.set(JSON.parse(fileContent as string));
+		lastSavedState.set(fileContent as string);
+
+		const parsedValues = JSON.parse(fileContent as string);
+		activeCaseStore.set(parsedValues);
 
 		message(`Případ ze souboru ${selectedPath} byl načten.`, {
 			title: 'soubor načten',
@@ -67,10 +72,14 @@ export const saveCaseToFile = async () => {
 			: new Date().toLocaleDateString('es-CL');
 		const savePath = await save({ title: 'Uložit případ.', defaultPath });
 		if (!savePath) return;
+
+		const serializedValues = JSON.stringify(activeCaseValues);
 		await invoke('save_file', {
 			path: `${savePath}.sudba`,
-			contents: JSON.stringify(activeCaseValues)
+			contents: serializedValues
 		});
+
+		lastSavedState.set(serializedValues);
 
 		message(`Případ byl uložen do souboru ${savePath}.`, {
 			title: 'soubor uložen',
