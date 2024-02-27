@@ -7,7 +7,6 @@ use std::fs;
 fn main() {
   let quit_option = CustomMenuItem::new("app:quit".to_string(), "Ukončit");
 
-  // TODO: add new file
   let save_option = CustomMenuItem::new("file:save".to_string(), "Uložit").accelerator("CmdOrCtrl+S");
   let load_option = CustomMenuItem::new("file:load".to_string(), "Otevřít").accelerator("CmdOrCtrl+O");
   let app_submenu = Submenu::new("Sudba", Menu::new().add_item(quit_option));

@@ -82,20 +82,26 @@ export const isUnsavedStore = derived(
 );
 
 export const resultActiveCaseStore = derived([activeCaseStore, time], ([$activeCase]) => {
-	const sentencedCrimes = $activeCase.sentencedCrimes.map((crime, index) => ({
-		...crime,
-		label: `OSK${index + 1}`
-	}));
+	const sentencedCrimes = $activeCase.sentencedCrimes
+		.filter((c) => c.date)
+		.map((crime, index) => ({
+			...crime,
+			label: `OSK${index + 1}`
+		}));
 	const resultData = {
 		...$activeCase,
-		crimes: $activeCase.crimes.map((crime, index) => ({ ...crime, label: `SK${index + 1}` })),
-		sentences: $activeCase.sentences.map((sentence, index) => ({
-			...sentence,
-			label: `R${index + 1}`,
-			crimesData: sentencedCrimes.filter(
-				(crime) => sentence.crimes?.includes(crime.id) ?? false
-			) as LabeledCrime[]
-		})),
+		crimes: $activeCase.crimes
+			.filter((c) => c.date)
+			.map((crime, index) => ({ ...crime, label: `SK${index + 1}` })),
+		sentences: $activeCase.sentences
+			.filter((s) => s.dateAnnounced)
+			.map((sentence, index) => ({
+				...sentence,
+				label: `R${index + 1}`,
+				crimesData: sentencedCrimes.filter(
+					(crime) => sentence.crimes?.includes(crime.id) ?? false
+				) as LabeledCrime[]
+			})),
 		sentencedCrimes
 	} as ResultCaseStore;
 

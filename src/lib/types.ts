@@ -33,11 +33,12 @@ export type Case = {
 	sentences: Sentence[];
 };
 
-export type LabeledCrime = Crime & { label: string };
+export type LabeledCrime = Required<Crime> & { label: string; date: string };
 
 export type ResultSentence = Sentence & {
 	crimesData: LabeledCrime[];
 	cancelsSentenceData?: ResultSentence;
+	dateAnnouncedData: string;
 	label: string;
 };
 
