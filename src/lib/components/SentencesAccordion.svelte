@@ -37,7 +37,7 @@
 			<TableHeadCell>Ruší rozsudek</TableHeadCell>
 			<TableHeadCell
 				><div class="flex items-center justify-center space-x-2">
-					<SortButton on:click={activeCaseStore.sortSentences} />
+					<!-- <SortButton on:click={activeCaseStore.sortSentences} /> -->
 				</div>
 			</TableHeadCell>
 		</TableHead>

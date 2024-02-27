@@ -10,13 +10,13 @@
 	} from 'flowbite-svelte';
 	import type { Crime } from '../../types';
 	import { activeCaseStore, createEmptyCrime } from '../../caseStore';
-	import SortButton from '../atoms/SortButton.svelte';
+	// import SortButton from '../atoms/SortButton.svelte';
 	import CrimeTableRow from './CrimeTableRow.svelte';
 	import { PlusSolid } from 'flowbite-svelte-icons';
 
 	export let wasSentenced = false;
 	export let crimes: Crime[] = [];
-	$: sortFunction = wasSentenced ? activeCaseStore.sortSentencedCrimes : activeCaseStore.sortCrimes;
+	// $: sortFunction = wasSentenced ? activeCaseStore.sortSentencedCrimes : activeCaseStore.sortCrimes;
 	$: header = wasSentenced ? 'Odsouzené skutky' : 'Skutky k odsouzení';
 
 	$: handleAddCrime = wasSentenced
@@ -39,7 +39,7 @@
 		<TableHeadCell>Poznámka</TableHeadCell>
 		<TableHeadCell
 			><div class="flex items-center justify-center space-x-2">
-				<SortButton on:click={sortFunction} />
+				<!-- <SortButton on:click={sortFunction} /> -->
 			</div>
 		</TableHeadCell>
 	</TableHead>
