@@ -7,19 +7,19 @@ export type Offender = {
 
 export type Crime = {
 	id: CrimeId;
-	date: string;
-	valueStolen: number;
-	valueDestroyed: number;
-	note: string;
+	date?: string;
+	valueStolen?: number;
+	valueDestroyed?: number;
+	note?: string;
 };
 
 export type Sentence = {
 	id: SentenceId;
-	fileId: string;
+	fileId?: string;
 	filePage?: number;
-	court: string; // TODO: change to union of strings
-	dateAnnounced: string;
-	isLegallyForced: boolean;
+	court?: string; // TODO: change to union of strings
+	dateAnnounced?: string;
+	isLegallyForced?: boolean;
 	dateLegallyForced?: string;
 	crimes?: CrimeId[];
 	cancelsSentece?: SentenceId;
@@ -37,6 +37,7 @@ export type LabeledCrime = Crime & { label: string };
 
 export type ResultSentence = Sentence & {
 	crimesData: LabeledCrime[];
+	cancelsSentenceData?: ResultSentence;
 	label: string;
 };
 

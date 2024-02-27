@@ -3,32 +3,41 @@
 
 	import Timeline from './Timeline/Timeline.svelte';
 	import { InfoCircleSolid } from 'flowbite-svelte-icons';
-	import { activeCaseStore, resultActiveCaseStore } from '../caseStore';
-	import { formatCaseResultMessage, calculateCaseResult } from '../caseSolver';
-	let isTimelineDisplayed = false;
-	$: {
-		isTimelineDisplayed = $activeCaseStore.crimes.filter((crime) => crime.date !== '').length > 0;
-	}
+	import { resultActiveCaseStore, isErrorActive } from '../caseStore';
+	import { getResultLevels } from '../caseSolver';
+	import { A } from '@mobily/ts-belt';
 
-	let resultMessage = '';
-	$: {
-		console.log('fjdslfjsdl');
-		const caseResult = calculateCaseResult($resultActiveCaseStore);
-		resultMessage = caseResult ? formatCaseResultMessage(caseResult) : 'FAIL';
-	}
+	$: isAlertDisplayed = $isErrorActive || $resultActiveCaseStore.crimes.length === 0;
+	$: alertColor = ($isErrorActive ? 'red' : 'dark') as 'red' | 'dark';
+	$: alertMessage = $isErrorActive
+		? 'Výsledek nelze zobrazit. Ve formuláři se vyskytují chyby.'
+		: 'Zatím nebyly zadána žádná data. Pro zobrazení časové osy, začněte vyplňovat formulář.';
+
+	$: resultMessages = getResultLevels($resultActiveCaseStore);
 </script>
 
-<AccordionItem open={isTimelineDisplayed}>
-	<span slot="header"><Heading tag="h5">Výsledek:</Heading></span>
+<AccordionItem open>
+	<span slot="header"><Heading tag="h4">Výsledek:</Heading></span>
 	<div class="flex justify-center items-center">
-		{#if isTimelineDisplayed}
-			<Timeline />
-			{resultMessage}
-		{:else}
-			<Alert border color="dark">
+		{#if isAlertDisplayed}
+			<Alert border color={alertColor}>
 				<InfoCircleSolid slot="icon" class="w-4 h-4" />
-				Zatím nebyly zadána žádná data. Pro zobrazení časové osy, začněte vyplňovat formulář.
+				{alertMessage}
 			</Alert>
+		{:else}
+			<Timeline />
+			<div class="flex flex-col gap-2">
+				{#if A.length(resultMessages) > 1}
+					<Heading tag="h6">Patrový rozsudek:</Heading>
+					{#each resultMessages as message, levelIndex}
+						<div>
+							{levelIndex + 1}. PATRO: {message}
+						</div>
+					{/each}
+				{:else}
+					{resultMessages[0]}
+				{/if}
+			</div>
 		{/if}
 	</div>
 </AccordionItem>

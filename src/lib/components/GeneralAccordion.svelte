@@ -5,7 +5,7 @@
 </script>
 
 <AccordionItem open>
-	<span slot="header"><Heading tag="h5">Obecné informace:</Heading></span>
+	<span slot="header"><Heading tag="h4">Obecné informace:</Heading></span>
 
 	<form>
 		<div>

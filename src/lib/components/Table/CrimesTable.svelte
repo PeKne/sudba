@@ -1,53 +1,43 @@
 <script lang="ts">
 	import {
+		Button,
+		DropdownDivider,
 		Heading,
-		Input,
 		Table,
 		TableBody,
-		TableBodyCell,
-		TableBodyRow,
 		TableHead,
 		TableHeadCell
 	} from 'flowbite-svelte';
-	import DeleteButton from '../atoms/DeleteButton.svelte';
-	import MyTextarea from '../atoms/MyTextarea.svelte';
 	import type { Crime } from '../../types';
 	import { activeCaseStore, createEmptyCrime } from '../../caseStore';
-	import AddButton from '../atoms/AddButton.svelte';
 	import SortButton from '../atoms/SortButton.svelte';
+	import CrimeTableRow from './CrimeTableRow.svelte';
+	import { PlusSolid } from 'flowbite-svelte-icons';
 
 	export let wasSentenced = false;
 	export let crimes: Crime[] = [];
-	export let labelPrefix = '';
 
-	const label = wasSentenced ? 'OSK' : 'SK';
+	$: console.log('CrimesTable.svelte', { wasSentenced, crimes });
+	$: sortFunction = wasSentenced ? activeCaseStore.sortSentencedCrimes : activeCaseStore.sortCrimes;
+	$: header = wasSentenced ? 'Odsouzené skutky' : 'Skutky k odsouzení';
 
-	// TODO: move to the store
-	const handleAddCrime = () => (crimes = [...crimes, createEmptyCrime()]);
-
-	const handleRemoveCrime = (index: number) => {
-		const crimesCopy = [...crimes];
-		crimesCopy.splice(index, 1);
-		crimes = crimesCopy;
-	};
-
-	let header = '';
-	let textColorClass = '';
-	let sortFunction: (() => void) | null = null;
-	$: {
-		sortFunction = wasSentenced ? activeCaseStore.sortSentencedCrimes : activeCaseStore.sortCrimes;
-		textColorClass = wasSentenced ? 'text-black' : 'text-red-500';
-		header = wasSentenced ? 'Odsouzené skutky' : 'Skutky k odsouzení';
-	}
+	$: handleAddCrime = wasSentenced
+		? () =>
+				($activeCaseStore.sentencedCrimes = [
+					...$activeCaseStore.sentencedCrimes,
+					createEmptyCrime()
+				])
+		: () => ($activeCaseStore.crimes = [...$activeCaseStore.crimes, createEmptyCrime()]);
 </script>
 
-<Heading tag="h5">{header}:</Heading>
-<Table divClass="pt-3">
-	<TableHead>
+<Heading tag="h4">{header}:</Heading>
+<Table divClass="pt-3" striped shadow>
+	<TableHead class="divide-y">
 		<TableHeadCell>Značka</TableHeadCell>
 		<TableHeadCell>Datum</TableHeadCell>
 		<TableHeadCell>Škoda odcizením</TableHeadCell>
 		<TableHeadCell>Škoda poškozením</TableHeadCell>
+		<TableHeadCell>Škoda celkem</TableHeadCell>
 		<TableHeadCell>Poznámka</TableHeadCell>
 		<TableHeadCell
 			><div class="flex items-center justify-center space-x-2">
@@ -56,27 +46,14 @@
 		</TableHeadCell>
 	</TableHead>
 	<TableBody>
-		{#each crimes as crime, index}
-			<TableBodyRow>
-				<TableBodyCell
-					><span class={textColorClass}>{labelPrefix}{label}{index + 1}</span></TableBodyCell
-				>
-				<TableBodyCell
-					><Input type="date" id="first_name" required bind:value={crime.date} />
-				</TableBodyCell>
-				<TableBodyCell><Input type="number" bind:value={crime.valueStolen} /></TableBodyCell>
-				<TableBodyCell><Input type="number" bind:value={crime.valueDestroyed} /></TableBodyCell>
-				<TableBodyCell><MyTextarea bind:value={crime.note} /></TableBodyCell>
-				<TableBodyCell class="flex items-center justify-center space-x-2">
-					{#if crimes.length !== 1}
-						<DeleteButton on:click={() => handleRemoveCrime(index)} />
-					{/if}
-					{#if index === crimes.length - 1}
-						<!-- content here -->
-						<AddButton on:click={handleAddCrime} />
-					{/if}
-				</TableBodyCell>
-			</TableBodyRow>
+		{#each crimes as crime, crimeIndex (crime.id)}
+			<CrimeTableRow {crime} {crimeIndex} {wasSentenced} />
 		{/each}
 	</TableBody>
 </Table>
+<DropdownDivider />
+<div class="pb-5 pt-5 space-x-2 w-full flex justify-end">
+	<Button size="lg" color="primary" on:click={handleAddCrime}
+		><PlusSolid class="me-2" />Přidat Skutek</Button
+	>
+</div>

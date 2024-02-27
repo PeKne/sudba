@@ -1,12 +1,28 @@
-import { open, message, save } from '@tauri-apps/api/dialog';
+import { open, message, save, ask } from '@tauri-apps/api/dialog';
 import { invoke } from '@tauri-apps/api/tauri';
 import { readTextFile } from '@tauri-apps/api/fs';
 
 import { get } from 'svelte/store';
 
 import { activeCaseStore } from './caseStore';
+import { S } from '@mobily/ts-belt';
+
+// TODO: check if there are unsaved changes first, if yes offer save
+export const confirmUnsavedChanges = async () => {
+	return await ask(
+		"Pokud stisknete 'Ano', přijdete o všechny neuložené změny. Chcete pokračovat?",
+		{
+			title: 'Neuložené změny',
+			okLabel: 'Ano',
+			cancelLabel: 'Ne',
+			type: 'warning'
+		}
+	);
+};
 
 export const readCaseFromFile = async () => {
+	if (!(await confirmUnsavedChanges())) return;
+
 	try {
 		const selectedPath = await open({
 			multiple: false,
@@ -46,11 +62,14 @@ export const saveCaseToFile = async () => {
 	try {
 		// TODO: handle versioning
 		const activeCaseValues = get(activeCaseStore);
-		const savePath = await save({ title: 'Uložit případ.', defaultPath: activeCaseValues.fileId });
+		const defaultPath = S.isNotEmpty(activeCaseValues.fileId)
+			? activeCaseValues.fileId
+			: new Date().toLocaleDateString('es-CL');
+		const savePath = await save({ title: 'Uložit případ.', defaultPath });
 		if (!savePath) return;
 		await invoke('save_file', {
 			path: `${savePath}.sudba`,
-			contents: JSON.stringify(get(activeCaseStore))
+			contents: JSON.stringify(activeCaseValues)
 		});
 
 		message(`Případ byl uložen do souboru ${savePath}.`, {

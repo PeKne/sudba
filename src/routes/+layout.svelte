@@ -1,10 +1,13 @@
 <script>
+	import { D } from '@mobily/ts-belt';
 	import '../app.postcss';
+	import { DarkMode } from 'flowbite-svelte';
 </script>
 
 <div class="app">
 	<main>
 		<slot />
+		<!-- <DarkMode /> -->
 	</main>
 </div>
 

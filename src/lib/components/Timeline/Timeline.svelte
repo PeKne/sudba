@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as Plot from '@observablehq/plot';
-	import { activeCaseStore } from '../../caseStore';
+	import { resultActiveCaseStore } from '../../caseStore';
 
 	let div: HTMLDivElement | undefined;
 
@@ -43,16 +43,14 @@
 
 	$: {
 		const plotCrimes = () => {
-			const crimesData = $activeCaseStore.crimes.map((crime, index) => ({
+			const crimesData = $resultActiveCaseStore.crimes.map((crime, index) => ({
 				...crime,
-				date: new Date(crime.date),
-				label: `SK${index + 1}`
+				date: new Date(crime.date)
 			}));
 
-			const sentencedCrimesData = $activeCaseStore.sentencedCrimes.map((crime, index) => ({
+			const sentencedCrimesData = $resultActiveCaseStore.sentencedCrimes.map((crime, index) => ({
 				...crime,
-				date: new Date(crime.date),
-				label: `OSK${index + 1}`
+				date: new Date(crime.date)
 			}));
 
 			return [
@@ -70,13 +68,13 @@
 		};
 
 		const plotSentences = () => {
-			const sentencesAnnouncedData = $activeCaseStore.sentences.map((sentence, index) => ({
+			const sentencesAnnouncedData = $resultActiveCaseStore.sentences.map((sentence, index) => ({
 				...sentence,
 				date: new Date(sentence.dateAnnounced),
 				label: `V R${index + 1}`
 			}));
 
-			const sentencesLegallyForcedData = $activeCaseStore.sentences
+			const sentencesLegallyForcedData = $resultActiveCaseStore.sentences
 				.filter((sentence) => sentence.dateLegallyForced !== undefined)
 				.map((sentence, index) => ({
 					...sentence,

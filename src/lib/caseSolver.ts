@@ -1,17 +1,34 @@
-import { A, D, G, pipe } from '@mobily/ts-belt';
-import type { ResultCaseStore, LabeledCrime, ResultSentence } from './types';
+import { A, D, F, G, pipe } from '@mobily/ts-belt';
+import type { ResultCaseStore, LabeledCrime, ResultSentence, SentenceId } from './types';
 
 type ResultType = 'UHRN' | 'SOUHRN' | 'SAMOSTATNY';
 
 type CaseResultLevel = {
-	crimes: ResultCaseStore['crimes'];
-	canceledSentence?: ResultCaseStore['sentences'][0];
+	crimes: LabeledCrime[];
+	canceledSentences?: ResultSentence[];
 };
 
 type CaseResult = {
 	UHRN: { crimes: LabeledCrime[] };
-	SOUHRN: { crimes: LabeledCrime[]; canceledSentence?: ResultSentence };
+	SOUHRN: { crimes: LabeledCrime[]; canceledSentences: ResultSentence[] };
 	SAMOSTATNY: { crimes: LabeledCrime[] };
+};
+
+// TODO: move this elsewhere
+const getConnectedSenteces = (
+	sentenceId: SentenceId,
+	sentences: ResultSentence[]
+): ResultSentence[] => {
+	const result: ResultSentence[] = [];
+	let nextSentence = sentences.find((s) => s.id === sentenceId);
+	while (G.isNotNullable(nextSentence)) {
+		result.push(nextSentence);
+		console.log('🚀 ~ result:', result);
+
+		nextSentence = sentences.find((s) => s.cancelsSentece === nextSentence?.id);
+	}
+
+	return result;
 };
 
 const formatResultLevelMessage = (levelType: ResultType, caseLevel?: CaseResultLevel): string => {
@@ -19,9 +36,18 @@ const formatResultLevelMessage = (levelType: ResultType, caseLevel?: CaseResultL
 		return 'Nepodarilo se zjistit typ zlocinu';
 	}
 
-	const { crimes, canceledSentence } = caseLevel;
+	const { crimes, canceledSentences } = caseLevel;
 
-	const sentenceCrimes = canceledSentence?.crimesData ?? [];
+	const sentenceCrimes =
+		canceledSentences?.reduce(
+			(accumulator: LabeledCrime[], s) => accumulator.concat(s.crimesData),
+			[]
+		) ?? [];
+
+	const areSentencesPlural = A.length(canceledSentences ?? []) > 1;
+
+	const stringifiedSentences = canceledSentences?.map((s) => s.label).join(', ') ?? '';
+	console.log('🚀 ~ formatResultLevelMessage ~ sentenceCrimes:', sentenceCrimes);
 	const joinedCrimes = A.isNotEmpty(sentenceCrimes) ? A.concat(sentenceCrimes, crimes) : crimes;
 
 	const formattedCrimes = joinedCrimes.map((crime) => crime.label ?? 'UNDEFINED').join(', ');
@@ -33,7 +59,9 @@ const formatResultLevelMessage = (levelType: ResultType, caseLevel?: CaseResultL
 
 		case 'SOUHRN':
 			// const formattedCanceledSentence = caseLevel.canceledSentence!.
-			return `Souhrný trest ${formattedCrimes} při zrušení rozsudku ${canceledSentence?.label}`;
+			return `Souhrný trest ${formattedCrimes} při zrušení rozsudk${
+				areSentencesPlural ? 'ů' : 'u'
+			} ${stringifiedSentences}`;
 
 		case 'SAMOSTATNY':
 			// const formattedCanceledSentence = caseLevel.canceledSentence!.
@@ -44,38 +72,40 @@ const formatResultLevelMessage = (levelType: ResultType, caseLevel?: CaseResultL
 	}
 };
 
-export const formatCaseResultMessage = (resultLevels: CaseResult): string => {
-	// TODO: for each category create a message with its crimes
-	// TODO: later print canceled sentence
+export const getResultLevels = (inputCase: ResultCaseStore): string[] => {
+	const resultLevels = calculateCaseResult(inputCase);
 
 	return pipe(
-		resultLevels,
+		resultLevels!,
 		D.filter((value) => A.isNotEmpty(value.crimes)),
 		D.mapWithKey((levelType, caseLevel) => formatResultLevelMessage(levelType, caseLevel)),
 		D.values,
-		A.join('\n')
+		F.toMutable
 	);
 };
 
 export const calculateCaseResult = (inputCase: ResultCaseStore): CaseResult | null => {
 	const { crimes, sentences } = inputCase;
+	console.log(
+		'🚀 ~ calculateCaseResult ~ sentences:',
+		sentences.map((s) => s.cancelsSentece)
+	);
 	const sentencesCopy = [...sentences];
 
 	const result: CaseResult = {
 		UHRN: { crimes: [] },
-		SOUHRN: { crimes: [] },
+		SOUHRN: { crimes: [], canceledSentences: [] },
 		SAMOSTATNY: { crimes: [] }
 	};
 
-	const sortedSentences = sentencesCopy.sort((a, b) =>
-		a.dateAnnounced.localeCompare(b.dateAnnounced)
+	const sortedSentences = sentencesCopy.sort(
+		(a, b) => a.dateAnnounced?.localeCompare(b.dateAnnounced ?? '') ?? 0
 	);
 	const firstSentence = sortedSentences[0];
 
 	const validCrimes = crimes.filter((crime) => crime.date !== '' && crime.date !== 'Date');
 
 	validCrimes.forEach((crime) => {
-		console.log(firstSentence.dateAnnounced);
 		// UHRNY
 		if (firstSentence.dateAnnounced === '' || firstSentence.dateAnnounced === 'Date') {
 			result.UHRN.crimes.push(crime);
@@ -85,7 +115,7 @@ export const calculateCaseResult = (inputCase: ResultCaseStore): CaseResult | nu
 		// SOUHRNY
 		if (firstSentence.dateAnnounced > crime.date) {
 			result.SOUHRN.crimes.push(crime);
-			result.SOUHRN.canceledSentence = firstSentence;
+			result.SOUHRN.canceledSentences = getConnectedSenteces(firstSentence.id, sentences);
 		}
 
 		if (firstSentence.dateAnnounced <= crime.date) {
@@ -93,7 +123,6 @@ export const calculateCaseResult = (inputCase: ResultCaseStore): CaseResult | nu
 		}
 	});
 
-	console.log('🚀 ~ calculateCaseResult ~ result:', result);
 	// const findClosest
 	return result;
 };
