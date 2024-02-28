@@ -81,7 +81,7 @@ export const saveCaseToFile = async () => {
 
 		lastSavedState.set(serializedValues);
 
-		message(`Případ byl uložen do souboru ${savePath}.`, {
+		message(`Případ byl uložen do souboru ${savePath}.sudba`, {
 			title: 'soubor uložen',
 			type: 'info'
 		});

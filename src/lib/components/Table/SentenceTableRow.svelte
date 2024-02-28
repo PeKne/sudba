@@ -97,6 +97,8 @@
 		/>
 	</TableBodyCell>
 	<TableBodyCell class="flex items-center justify-center space-x-2">
-		<DeleteButton on:click={() => handleRemoveSentence(sentenceIndex)} />
+		{#if sentenceIndex !== 0}
+			<DeleteButton on:click={() => handleRemoveSentence(sentenceIndex)} />
+		{/if}
 	</TableBodyCell>
 </TableBodyRow>

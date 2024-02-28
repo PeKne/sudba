@@ -16,7 +16,7 @@
 
 	const label = wasSentenced ? 'OSK' : 'SK';
 
-	$: crimesArray = wasSentenced ? $activeCaseStore.sentencedCrimes : $activeCaseStore.crimes;
+	// $: crimesArray = wasSentenced ? $activeCaseStore.sentencedCrimes : $activeCaseStore.crimes;
 
 	$: handleRemoveCrime = (index: number) => {
 		const crimesCopy = [
@@ -66,6 +66,8 @@
 	<TableBodyCell>{totalValue}</TableBodyCell>
 	<TableBodyCell><MyTextarea bind:value={crime.note} /></TableBodyCell>
 	<TableBodyCell class="flex items-center justify-center space-x-2">
-		<DeleteButton on:click={() => handleRemoveCrime(crimeIndex)} />
+		{#if crimeIndex !== 0}
+			<DeleteButton on:click={() => handleRemoveCrime(crimeIndex)} />
+		{/if}
 	</TableBodyCell>
 </TableBodyRow>

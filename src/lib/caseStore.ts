@@ -83,7 +83,7 @@ export const isUnsavedStore = derived(
 
 export const resultActiveCaseStore = derived([activeCaseStore, time], ([$activeCase]) => {
 	const sentencedCrimes = $activeCase.sentencedCrimes
-		.filter((c) => c.date)
+		// .filter((c) => c.date)
 		.map((crime, index) => ({
 			...crime,
 			label: `OSK${index + 1}`
@@ -91,10 +91,10 @@ export const resultActiveCaseStore = derived([activeCaseStore, time], ([$activeC
 	const resultData = {
 		...$activeCase,
 		crimes: $activeCase.crimes
-			.filter((c) => c.date)
+			// .filter((c) => c.date)
 			.map((crime, index) => ({ ...crime, label: `SK${index + 1}` })),
 		sentences: $activeCase.sentences
-			.filter((s) => s.dateAnnounced)
+			// .filter((s) => s.dateAnnounced)
 			.map((sentence, index) => ({
 				...sentence,
 				label: `R${index + 1}`,
@@ -144,10 +144,6 @@ const validateSentences = (sentences: ResultSentence[]) => {
 					sentence.id
 				].cancelsSentece = `Datum zrušení nesmí být dříve než datum vyhlášení rozsudku ${cancelsSentenceData.label}.`;
 			}
-		}
-
-		if (sentence.filePage && sentence.filePage < 5) {
-			sentenceErrors[sentence.id].filePage = 'OMG insert the page';
 		}
 
 		if (G.isNullable(dateAnnounced)) {
