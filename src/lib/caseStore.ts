@@ -146,10 +146,6 @@ const validateSentences = (sentences: ResultSentence[]) => {
 			}
 		}
 
-		if (sentence.filePage && sentence.filePage < 5) {
-			sentenceErrors[sentence.id].filePage = 'OMG insert the page';
-		}
-
 		if (G.isNullable(dateAnnounced)) {
 			sentenceErrors[sentence.id].dateAnnounced = 'Povinné pole.';
 		}
