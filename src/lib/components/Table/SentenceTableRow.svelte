@@ -44,17 +44,6 @@
 
 		sentence.cancelsSentece = value;
 	};
-
-	const handleChangeCrimes = (event: Event) => {
-		const input = event.target as HTMLInputElement;
-		const value = input.value as SentenceId;
-
-		if (value === 'X') {
-			sentence.cancelsSentece = undefined;
-		}
-
-		sentence.cancelsSentece = value;
-	};
 </script>
 
 <TableBodyRow>
@@ -71,7 +60,6 @@
 	>
 	<TableBodyCell
 		><ValidatedInput
-			min="2024-02-07"
 			type="date"
 			bind:value={sentence.dateAnnounced}
 			error={errors.dateAnnounced}
