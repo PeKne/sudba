@@ -9,9 +9,8 @@ type CaseResultLevel = {
 };
 
 type CaseResult = {
-	UHRN: { crimes: LabeledCrime[] };
 	SOUHRN: { crimes: LabeledCrime[]; canceledSentences: ResultSentence[] };
-	SAMOSTATNY: { crimes: LabeledCrime[] };
+	SAMOSTATNY: { crimes: LabeledCrime[] }; // Contains also UHRNY
 };
 
 // TODO: move this elsewhere
@@ -51,9 +50,6 @@ const formatResultLevelMessage = (levelType: ResultType, caseLevel?: CaseResultL
 	// const formattedCrimes = caseLevel.crimes.map((_, index) => `SK${index + 1}`).join(', ');
 
 	switch (levelType) {
-		case 'UHRN':
-			return `Úhrný trest ${formattedCrimes}`;
-
 		case 'SOUHRN':
 			// const formattedCanceledSentence = caseLevel.canceledSentence!.
 			return `Souhrný trest ${formattedCrimes} při zrušení rozsudk${
@@ -62,7 +58,7 @@ const formatResultLevelMessage = (levelType: ResultType, caseLevel?: CaseResultL
 
 		case 'SAMOSTATNY':
 			// const formattedCanceledSentence = caseLevel.canceledSentence!.
-			return `Samostatný trest ${formattedCrimes}`;
+			return `${crimes.length > 1 ? 'Úhrný' : 'Samostatný'} trest ${formattedCrimes}`;
 
 		default:
 			return 'Nepodarilo se zjistit typ zlocinu';
@@ -86,7 +82,6 @@ export const calculateCaseResult = (inputCase: ResultCaseStore): CaseResult | nu
 	const sentencesCopy = [...sentences];
 
 	const result: CaseResult = {
-		UHRN: { crimes: [] },
 		SOUHRN: { crimes: [], canceledSentences: [] },
 		SAMOSTATNY: { crimes: [] }
 	};
@@ -99,12 +94,6 @@ export const calculateCaseResult = (inputCase: ResultCaseStore): CaseResult | nu
 	const validCrimes = crimes.filter((crime) => crime.date !== '' && crime.date !== 'Date');
 
 	validCrimes.forEach((crime) => {
-		// UHRNY
-		if (firstSentence.dateAnnounced === '' || firstSentence.dateAnnounced === 'Date') {
-			result.UHRN.crimes.push(crime);
-			return;
-		}
-
 		// SOUHRNY
 		if (firstSentence.dateAnnounced > crime.date) {
 			result.SOUHRN.crimes.push(crime);
