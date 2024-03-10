@@ -34,6 +34,8 @@ export const defaultCaseValue: Case = {
 
 import { readable } from 'svelte/store';
 
+const deepCopy = (obj: object) => JSON.parse(JSON.stringify(obj));
+
 export const time = readable(new Date(), function start(set) {
 	const interval = setInterval(() => {
 		set(new Date());
@@ -45,7 +47,7 @@ export const time = readable(new Date(), function start(set) {
 });
 
 const createCaseStore = () => {
-	const store = writable<Case>(defaultCaseValue);
+	const store = writable<Case>(deepCopy(defaultCaseValue));
 
 	return {
 		...store,
@@ -67,7 +69,8 @@ const createCaseStore = () => {
 					...activeCase.sentencedCrimes.sort((a, b) => a.date.localeCompare(b.date))
 				];
 				return activeCase;
-			})
+			}),
+		reset: () => store.set(deepCopy(defaultCaseValue))
 	};
 };
 

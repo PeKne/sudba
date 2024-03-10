@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { Input, TableBodyCell, TableBodyRow } from 'flowbite-svelte';
-	import { activeCaseStore, createEmptyCrime, formErrorsStore } from '../../caseStore';
-	import AddButton from '../atoms/AddButton.svelte';
+	import { TableBodyCell, TableBodyRow } from 'flowbite-svelte';
+	import { activeCaseStore, formErrorsStore } from '../../caseStore';
 	import DeleteButton from '../atoms/DeleteButton.svelte';
 	import MyTextarea from '../atoms/MyTextarea.svelte';
 	import ValidatedInput from '../atoms/ValidatedInput.svelte';
