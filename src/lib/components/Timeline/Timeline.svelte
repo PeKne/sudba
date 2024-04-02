@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { resultActiveCaseStore } from '../../caseStore';
+	import { validatedFormStore } from '../../caseStore';
 	import { plotTimeline } from '../../timeline';
 
 	let div: HTMLDivElement | undefined;
@@ -9,7 +9,7 @@
 
 		// FIXME: Hack to update the function on every state change
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-		let _ = $resultActiveCaseStore;
+		let _ = $validatedFormStore;
 	}
 </script>
 

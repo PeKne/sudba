@@ -1,24 +1,24 @@
 import { A, D, F, G, pipe } from '@mobily/ts-belt';
-import type { ResultCaseStore, LabeledCrime, ResultSentence, SentenceId } from './types';
+import type { ValidatedForm, ValidatedCrime, ValidatedSentence, SentenceId } from './types';
 
 type ResultType = 'UHRN' | 'SOUHRN' | 'SAMOSTATNY';
 
 type CaseResultLevel = {
-	crimes: LabeledCrime[];
-	canceledSentences?: ResultSentence[];
+	crimes: ValidatedCrime[];
+	canceledSentences?: ValidatedSentence[];
 };
 
 type CaseResult = {
-	SOUHRN: { crimes: LabeledCrime[]; canceledSentences: ResultSentence[] };
-	SAMOSTATNY: { crimes: LabeledCrime[] }; // Contains also UHRNY
+	SOUHRN: { crimes: ValidatedCrime[]; canceledSentences: ValidatedSentence[] };
+	SAMOSTATNY: { crimes: ValidatedCrime[] }; // Contains also UHRNY
 };
 
 // TODO: move this elsewhere
 const getConnectedSenteces = (
 	sentenceId: SentenceId,
-	sentences: ResultSentence[]
-): ResultSentence[] => {
-	const result: ResultSentence[] = [];
+	sentences: ValidatedSentence[]
+): ValidatedSentence[] => {
+	const result: ValidatedSentence[] = [];
 	let nextSentence = sentences.find((s) => s.id === sentenceId);
 	while (G.isNotNullable(nextSentence)) {
 		result.push(nextSentence);
@@ -37,7 +37,7 @@ const formatResultLevelMessage = (levelType: ResultType, caseLevel?: CaseResultL
 
 	const sentenceCrimes =
 		canceledSentences?.reduce(
-			(accumulator: LabeledCrime[], s) => accumulator.concat(s.crimesData),
+			(accumulator: ValidatedCrime[], s) => accumulator.concat(s.crimesData),
 			[]
 		) ?? [];
 
@@ -65,7 +65,7 @@ const formatResultLevelMessage = (levelType: ResultType, caseLevel?: CaseResultL
 	}
 };
 
-export const getResultLevels = (inputCase: ResultCaseStore): string[] => {
+export const getResultLevels = (inputCase: ValidatedForm): string[] => {
 	const resultLevels = calculateCaseResult(inputCase);
 
 	return pipe(
@@ -77,7 +77,7 @@ export const getResultLevels = (inputCase: ResultCaseStore): string[] => {
 	);
 };
 
-export const calculateCaseResult = (inputCase: ResultCaseStore): CaseResult | null => {
+export const calculateCaseResult = (inputCase: ValidatedForm): CaseResult | null => {
 	const { crimes, sentences } = inputCase;
 	const sentencesCopy = [...sentences];
 
@@ -95,7 +95,7 @@ export const calculateCaseResult = (inputCase: ResultCaseStore): CaseResult | nu
 
 	validCrimes.forEach((crime) => {
 		// SOUHRNY
-		if (firstSentence.dateAnnounced > crime.date) {
+		if (firstSentence.dateAnnounced && firstSentence.dateAnnounced > crime.date) {
 			result.SOUHRN.crimes.push(crime);
 			result.SOUHRN.canceledSentences = getConnectedSenteces(firstSentence.id, sentences);
 		}

@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { Checkbox, TableBodyCell, TableBodyRow } from 'flowbite-svelte';
-	import { activeCaseStore, formErrorsStore } from '../../caseStore';
+	import { formStore, formErrorsStore } from '../../caseStore';
 	import DeleteButton from '../atoms/DeleteButton.svelte';
 	import MyTextarea from '../atoms/MyTextarea.svelte';
 	import ValidatedInput from '../atoms/ValidatedInput.svelte';
-	import type { AttackOption, Crime } from '../../types';
+	import type { AttackOption, RawCrime } from '../../types';
 	import ValidatedSelect from '../atoms/ValidatedSelect.svelte';
 
 	export let wasSentenced = false;
-	export let crime: Crime;
+	export let crime: RawCrime;
 	export let crimeIndex: number;
 
 	export let labelPrefix = '';
@@ -19,13 +19,11 @@
 	$: label = crime.isAttack !== 'no' ? attackLabel : crimeLabel;
 
 	$: handleRemoveCrime = (index: number) => {
-		const crimesCopy = [
-			...(wasSentenced ? $activeCaseStore.sentencedCrimes : $activeCaseStore.crimes)
-		];
+		const crimesCopy = [...(wasSentenced ? $formStore.sentencedCrimes : $formStore.crimes)];
 		crimesCopy.splice(index, 1);
 
-		if (wasSentenced) $activeCaseStore.sentencedCrimes = crimesCopy;
-		else $activeCaseStore.crimes = crimesCopy;
+		if (wasSentenced) $formStore.sentencedCrimes = crimesCopy;
+		else $formStore.crimes = crimesCopy;
 	};
 
 	const handleIsAttackChange = (event: Event) => {

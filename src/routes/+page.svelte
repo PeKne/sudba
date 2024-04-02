@@ -13,11 +13,11 @@
 
 	import SaveBadge from '../lib/components/SaveBadge.svelte';
 	import { attachTauriListeners } from '../lib/tauriListeners';
-	import { activeCaseStore } from '../lib/caseStore';
+	import { formStore } from '../lib/caseStore';
 
 	const resetForm = async () => {
 		if (!(await confirmUnsavedChanges())) return;
-		activeCaseStore.reset();
+		formStore.reset();
 	};
 	attachTauriListeners();
 </script>

@@ -4,7 +4,7 @@ import {
 	splitAttacksContinuationByDateDisclosed,
 	splitAttacksContinuationByTimeGap
 } from '../formatters';
-import type { Crime } from '../types';
+import type { RawCrime } from '../types';
 
 describe('groupAttacksByIsMainOffenderAndParagraph', () => {
 	it('should group attacks by isMainOffender and paragraph', () => {
@@ -17,7 +17,7 @@ describe('groupAttacksByIsMainOffenderAndParagraph', () => {
 			{ isMainOffender: false, paragraph: 'A' },
 			{ isMainOffender: false, paragraph: 'B' },
 			{ isMainOffender: false, paragraph: 'C' }
-		] as Crime[];
+		] as RawCrime[];
 
 		const result = groupAttacksByIsMainOffenderAndParagraph(attacks);
 		console.log('🚀 ~ it ~ result:', result);
@@ -50,7 +50,7 @@ describe('splitAttacksContinuationByTimeGap', () => {
 			{ date: '2022-05-10' },
 			{ date: '2022-09-01' },
 			{ date: '2022-09-05' }
-		] as Crime[];
+		] as RawCrime[];
 
 		const result = splitAttacksContinuationByTimeGap(attacks);
 
@@ -62,7 +62,7 @@ describe('splitAttacksContinuationByTimeGap', () => {
 	});
 
 	it('should return the same array if there is only one attack', () => {
-		const attacks = [{ date: '2022-01-01' }] as Crime[];
+		const attacks = [{ date: '2022-01-01' }] as RawCrime[];
 
 		const result = splitAttacksContinuationByTimeGap(attacks);
 
@@ -79,7 +79,7 @@ describe('splitAttacksContinuationByDateDisclosed', () => {
 			{ date: '2022-01-12', dateDisclosed: '2022-02-02' },
 			{ date: '2022-01-15', dateDisclosed: '2022-01-16' },
 			{ date: '2022-01-19', dateDisclosed: '2022-02-02' }
-		] as Crime[];
+		] as RawCrime[];
 
 		const result = splitAttacksContinuationByDateDisclosed(attacks);
 
@@ -98,7 +98,7 @@ describe('splitAttacksContinuationByDateDisclosed', () => {
 	});
 
 	it('should return the same array if there is only one attack', () => {
-		const attacks = [{ date: '2022-01-01', dateDisclosed: '2022-01-02' }] as Crime[];
+		const attacks = [{ date: '2022-01-01', dateDisclosed: '2022-01-02' }] as RawCrime[];
 
 		const result = splitAttacksContinuationByDateDisclosed(attacks);
 
@@ -118,7 +118,7 @@ describe('groupAttacksToCrimes', () => {
 			{ isMainOffender: false, paragraph: 'B', date: '2022-01-05', dateDisclosed: '2022-02-01' },
 			{ isMainOffender: false, paragraph: 'B', date: '2022-01-10', dateDisclosed: '2022-02-01' },
 			{ isMainOffender: false, paragraph: 'C', date: '2022-01-13', dateDisclosed: '2022-02-02' }
-		] as Crime[];
+		] as RawCrime[];
 
 		const result = groupAttacksToCrimes(attacks);
 		console.log('🚀 ~ it ~ result:', result);

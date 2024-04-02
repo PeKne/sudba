@@ -1,32 +1,36 @@
-import { writable, derived } from 'svelte/store';
+import { writable, derived, readable } from 'svelte/store';
+import { D } from '@mobily/ts-belt';
+import { v4 as uuid4 } from 'uuid';
+
 import type {
-	Case,
-	Crime,
+	RawForm,
+	RawCrime,
 	CrimeId,
-	LabeledCrime,
-	ResultCaseStore,
-	Sentence,
+	ValidatedCrime,
+	ValidatedForm,
+	RawSentence,
 	SentenceId
 } from './types';
-import { v4 as uuid4 } from 'uuid';
-import { validateCrimes, validateSentences } from './validators';
-import { D } from '@mobily/ts-belt';
 
+import { groupAttacksToCrimes } from './formatters';
+import { validateCrimes, validateSentences } from './validators';
+
+const deepCopy = (obj: object) => JSON.parse(JSON.stringify(obj));
 export const generateCrimeId = (): CrimeId => uuid4() as CrimeId;
 export const generateSentenceId = (): CrimeId => uuid4() as CrimeId;
 
-export const createEmptyCrime = (): Crime => ({
+export const createEmptyCrime = (): RawCrime => ({
 	id: uuid4() as CrimeId,
 	isAttack: 'no',
 	isMainOffender: false
 });
-export const createEmptySentence = (): Sentence => ({
+export const createEmptySentence = (): RawSentence => ({
 	id: uuid4() as SentenceId,
 	isLegallyForced: false,
 	crimes: []
 });
 
-export const defaultCaseValue: Case = {
+export const defaultFormValues: RawForm = {
 	fileId: '',
 	offender: {
 		name: ''
@@ -36,12 +40,7 @@ export const defaultCaseValue: Case = {
 	sentences: [createEmptySentence()]
 };
 
-import { readable } from 'svelte/store';
-import { groupAttacksToCrimes } from './formatters';
-
-const deepCopy = (obj: object) => JSON.parse(JSON.stringify(obj));
-
-export const time = readable(new Date(), function start(set) {
+export const timeStore = readable(new Date(), function start(set) {
 	const interval = setInterval(() => {
 		set(new Date());
 	}, 1000);
@@ -53,8 +52,8 @@ export const time = readable(new Date(), function start(set) {
 
 // TODO: rename to FormStore!
 // also rename Crime, Sentence etc. types to something like ...Input or ...Raw
-const createCaseStore = () => {
-	const store = writable<Case>(deepCopy(defaultCaseValue));
+const createFormStore = () => {
+	const store = writable<RawForm>(deepCopy(defaultFormValues));
 
 	return {
 		...store,
@@ -77,21 +76,21 @@ const createCaseStore = () => {
 				];
 				return activeCase;
 			}),
-		reset: () => store.set(deepCopy(defaultCaseValue))
+		reset: () => store.set(deepCopy(defaultFormValues))
 	};
 };
 
-export const activeCaseStore = createCaseStore();
+export const formStore = createFormStore();
 
-export const lastSavedState = writable(JSON.stringify(defaultCaseValue));
-export const isUnsavedStore = derived(
-	[activeCaseStore, lastSavedState, time],
+export const lastSavedSnaphotStore = writable(JSON.stringify(defaultFormValues));
+export const isFormUnsavedStore = derived(
+	[formStore, lastSavedSnaphotStore, timeStore],
 	([$activeCase, $lastSavedState]) => {
 		return JSON.stringify($activeCase) !== $lastSavedState;
 	}
 );
 
-export const resultActiveCaseStore = derived([activeCaseStore, time], ([$activeCase]) => {
+export const validatedFormStore = derived([formStore, timeStore], ([$activeCase]) => {
 	const sentencedCrimes = $activeCase.sentencedCrimes.map((crime, index) => ({
 		...crime,
 		label: `OSK${index + 1}`
@@ -105,7 +104,6 @@ export const resultActiveCaseStore = derived([activeCaseStore, time], ([$activeC
 		.map((attack, index) => ({ ...attack, label: `U${index + 1}` }));
 
 	const attackGroups = groupAttacksToCrimes(attacks);
-	console.log('🚀 ~ resultActiveCaseStore ~ attackGroups:', attackGroups);
 
 	const resultData = {
 		...$activeCase,
@@ -119,10 +117,10 @@ export const resultActiveCaseStore = derived([activeCaseStore, time], ([$activeC
 			label: `R${index + 1}`,
 			crimesData: sentencedCrimes.filter(
 				(crime) => sentence.crimes?.includes(crime.id) ?? false
-			) as LabeledCrime[]
+			) as ValidatedCrime[]
 		})),
 		sentencedCrimes
-	} as ResultCaseStore;
+	} as ValidatedForm;
 
 	// append related sentence data to each sentence
 	resultData.sentences = resultData.sentences.map((sentence) => ({
@@ -133,18 +131,18 @@ export const resultActiveCaseStore = derived([activeCaseStore, time], ([$activeC
 	return resultData;
 });
 
-export const formErrorsStore = derived([activeCaseStore, time], ([$activeCaseStore]) => {
+export const formErrorsStore = derived([formStore, timeStore], ([$formStore]) => {
 	return {
-		crimes: validateCrimes($activeCaseStore.crimes),
-		sentencedCrimes: validateCrimes($activeCaseStore.sentencedCrimes),
+		crimes: validateCrimes($formStore.crimes),
+		sentencedCrimes: validateCrimes($formStore.sentencedCrimes),
 		sentences: validateSentences({
-			sentences: $activeCaseStore.sentences,
-			sentencedCrimes: $activeCaseStore.sentencedCrimes
+			sentences: $formStore.sentences,
+			sentencedCrimes: $formStore.sentencedCrimes
 		})
 	};
 });
 
-export const isErrorActive = derived([formErrorsStore, time], ([$formErrorsStore]) => {
+export const isErrorStore = derived([formErrorsStore, timeStore], ([$formErrorsStore]) => {
 	return (
 		D.isNotEmpty($formErrorsStore.crimes) ||
 		D.isNotEmpty($formErrorsStore.sentences) ||

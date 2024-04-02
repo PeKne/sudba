@@ -1,5 +1,5 @@
 import * as Plot from '@observablehq/plot';
-import { resultActiveCaseStore } from './caseStore';
+import { validatedFormStore } from './caseStore';
 import { get } from 'svelte/store';
 
 const TIMELINE_WIDTH = 1400;
@@ -40,7 +40,7 @@ const dotOptions: Plot.DotOptions = {
 
 const plotAttackGroups = () => {
 	const timelineArray: Plot.Markish[] = [];
-	const attackGroups = get(resultActiveCaseStore).attackGroups;
+	const attackGroups = get(validatedFormStore).attackGroups;
 
 	attackGroups.forEach((group) => {
 		const attacksData = group.attacks.map((attack) => ({
@@ -62,12 +62,12 @@ const plotAttackGroups = () => {
 };
 
 const plotCrimes = () => {
-	const crimesData = get(resultActiveCaseStore).crimes.map((crime) => ({
+	const crimesData = get(validatedFormStore).crimes.map((crime) => ({
 		...crime,
 		date: new Date(crime.date)
 	}));
 
-	const sentencedCrimesData = get(resultActiveCaseStore).sentencedCrimes.map((crime) => ({
+	const sentencedCrimesData = get(validatedFormStore).sentencedCrimes.map((crime) => ({
 		...crime,
 		date: new Date(crime.date)
 	}));
@@ -87,7 +87,7 @@ const plotCrimes = () => {
 };
 
 const plotSentences = () => {
-	const storedSentences = get(resultActiveCaseStore).sentences;
+	const storedSentences = get(validatedFormStore).sentences;
 
 	const sentencesAnnouncedData = storedSentences.map((sentence, index) => ({
 		...sentence,

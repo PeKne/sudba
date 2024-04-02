@@ -1,30 +1,30 @@
 <script lang="ts">
 	import { TableBodyRow, TableBodyCell, Checkbox } from 'flowbite-svelte';
-	import { activeCaseStore, formErrorsStore } from '../../caseStore';
+	import { formStore, formErrorsStore } from '../../caseStore';
 	import DeleteButton from '../atoms/DeleteButton.svelte';
-	import type { Sentence, SentenceId } from '../../types';
+	import type { RawSentence, SentenceId } from '../../types';
 	import ValidatedInput from '../atoms/ValidatedInput.svelte';
 	import ValidatedMultiSelect from '../atoms/ValidatedMultiSelect.svelte';
 	import ValidatedSelect from '../atoms/ValidatedSelect.svelte';
 
-	export let sentence: Sentence;
+	export let sentence: RawSentence;
 	export let sentenceIndex: number;
 
 	const handleRemoveSentence = (index: number) => {
-		const sentencesCopy = [...$activeCaseStore.sentences];
+		const sentencesCopy = [...$formStore.sentences];
 		sentencesCopy.splice(index, 1);
-		$activeCaseStore.sentences = sentencesCopy;
+		$formStore.sentences = sentencesCopy;
 	};
 
 	$: errors = $formErrorsStore.sentences[sentence.id] ?? {};
-	$: crimeOptions = $activeCaseStore.sentencedCrimes.map((crime, index) => ({
+	$: crimeOptions = $formStore.sentencedCrimes.map((crime, index) => ({
 		value: crime.id,
 		name: `OSK${index + 1}`
 	}));
 
 	$: sentenceOptions = [
 		{ value: 'X', name: 'neruší žádný' },
-		...$activeCaseStore.sentences
+		...$formStore.sentences
 			.map((s, index) => ({ ...s, originalIndex: index }))
 			.filter((s) => s.id !== sentence.id)
 			.map((s) => ({

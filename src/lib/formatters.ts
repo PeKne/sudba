@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { pipe, D, A, G } from '@mobily/ts-belt';
-import type { AttackGroup, Crime } from './types';
+import type { AttackGroup, RawCrime } from './types';
 
-export function splitAttacksContinuationByDateDisclosed(crimes: Crime[]) {
+export function splitAttacksContinuationByDateDisclosed(crimes: RawCrime[]) {
 	const dateSortedCrimes = crimes.sort(
 		(a, b) => new Date(a.date!).getTime() - new Date(b.date!).getTime()
 	);
@@ -34,7 +34,7 @@ export function splitAttacksContinuationByDateDisclosed(crimes: Crime[]) {
 	return result;
 }
 
-export const splitAttacksContinuationByTimeGap = (attacks: Crime[]) => {
+export const splitAttacksContinuationByTimeGap = (attacks: RawCrime[]) => {
 	const output = [];
 	let tempArray = [];
 
@@ -67,7 +67,7 @@ export const splitAttacksContinuationByTimeGap = (attacks: Crime[]) => {
 	return output;
 };
 
-export const groupAttacksByIsMainOffenderAndParagraph = (attacks: Crime[]) => {
+export const groupAttacksByIsMainOffenderAndParagraph = (attacks: RawCrime[]) => {
 	return pipe(
 		attacks,
 		A.groupBy((attack) => String(attack.isMainOffender)),
@@ -76,15 +76,15 @@ export const groupAttacksByIsMainOffenderAndParagraph = (attacks: Crime[]) => {
 		A.map((isOffenderObject) => D.values(isOffenderObject)),
 		A.flat,
 		A.filter(G.isNotNullable)
-	) as unknown as Crime[][];
+	) as unknown as RawCrime[][];
 };
 const GROUP_COLORS = ['#0000FF', '#00FF00', '#00FFFF', '#00FF99', '#00AAFF', '#FFFF00', '#FF00FF'];
 
-const assignColorToGroup = (groupIndex: number, group: Crime[]) => {
+const assignColorToGroup = (groupIndex: number, group: RawCrime[]) => {
 	return { attacks: group, color: GROUP_COLORS[groupIndex] };
 };
 
-export const groupAttacksToCrimes = (attacks: Crime[]) => {
+export const groupAttacksToCrimes = (attacks: RawCrime[]) => {
 	return pipe(
 		attacks,
 		groupAttacksByIsMainOffenderAndParagraph,

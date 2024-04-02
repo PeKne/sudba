@@ -7,7 +7,7 @@ export type Offender = {
 
 export type AttackOption = 'yes' | 'no' | 'maybe';
 
-export type Crime = {
+export type RawCrime = {
 	id: CrimeId;
 	date?: string;
 	paragraph?: string;
@@ -19,7 +19,7 @@ export type Crime = {
 	note?: string;
 };
 
-export type Sentence = {
+export type RawSentence = {
 	id: SentenceId;
 	fileId?: string;
 	filePage?: number;
@@ -31,34 +31,34 @@ export type Sentence = {
 	cancelsSentece?: SentenceId;
 };
 
-export type Case = {
+export type RawForm = {
 	fileId: string;
 	offender: Offender;
-	crimes: Crime[];
-	sentencedCrimes: Crime[];
-	sentences: Sentence[];
+	crimes: RawCrime[];
+	sentencedCrimes: RawCrime[];
+	sentences: RawSentence[];
 };
 
-export type LabeledCrime = Required<Crime> & { label: string; date: string };
+export type ValidatedCrime = Required<RawCrime> & { label: string; date: string };
 
-export type ResultSentence = Sentence & {
-	crimesData: LabeledCrime[];
-	cancelsSentenceData?: ResultSentence;
+export type ValidatedSentence = RawSentence & {
+	crimesData: ValidatedCrime[];
+	cancelsSentenceData?: ValidatedSentence;
 	dateAnnouncedData: string;
 	label: string;
 };
 
 export type AttackGroup = {
 	color: string;
-	attacks: LabeledCrime[];
+	attacks: ValidatedCrime[];
 };
 
-export type ResultCaseStore = {
-	attacks: LabeledCrime[];
+export type ValidatedForm = {
+	attacks: ValidatedCrime[];
 	attackGroups: AttackGroup[];
-	crimes: LabeledCrime[];
-	sentencedCrimes: LabeledCrime[];
-	sentences: ResultSentence[];
+	crimes: ValidatedCrime[];
+	sentencedCrimes: ValidatedCrime[];
+	sentences: ValidatedSentence[];
 	fileId: string;
 	offender: Offender;
 };

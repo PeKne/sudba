@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { AccordionItem, Heading, Input, Label } from 'flowbite-svelte';
 
-	import { activeCaseStore } from '../caseStore';
+	import { formStore } from '../caseStore';
 
 	let offenderCount = 1;
 	let offenderNames: string[] = [];
@@ -23,7 +23,7 @@
 						id="offender"
 						placeholder="jméno pachatele"
 						required
-						bind:value={$activeCaseStore.offender.name}
+						bind:value={$formStore.offender.name}
 					/>
 				</div>
 			</div>

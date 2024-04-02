@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { G, D, A } from '@mobily/ts-belt';
-import type { Sentence, Crime, SentenceId, CrimeId } from './types';
+import type { RawSentence, RawCrime, SentenceId, CrimeId } from './types';
 
-type SenteceErrors = Record<keyof Sentence, string>;
-type CrimeErrors = Record<keyof Crime, string>;
+type SenteceErrors = Record<keyof RawSentence, string>;
+type CrimeErrors = Record<keyof RawCrime, string>;
 
 export const validateSentences = ({
 	sentences,
 	sentencedCrimes
 }: {
-	sentences: Sentence[];
-	sentencedCrimes: Crime[];
+	sentences: RawSentence[];
+	sentencedCrimes: RawCrime[];
 }) => {
 	const sentenceErrors: Record<SentenceId, SenteceErrors> = {};
 	sentences.forEach((sentence) => {
@@ -65,7 +65,7 @@ export const validateSentences = ({
 	return sentenceErrors;
 };
 
-export const validateCrimes = (crimes: Crime[]) => {
+export const validateCrimes = (crimes: RawCrime[]) => {
 	const crimeErrors: Record<CrimeId, CrimeErrors> = {};
 	crimes.forEach((crime) => {
 		const { id, date, isAttack, dateDisclosed, paragraph } = crime;

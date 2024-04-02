@@ -9,13 +9,12 @@
 		TableHeadCell
 	} from 'flowbite-svelte';
 
-	import { activeCaseStore, createEmptySentence } from '../caseStore';
-	import SortButton from './atoms/SortButton.svelte';
+	import { formStore, createEmptySentence } from '../caseStore';
 	import SentenceTableRow from './Table/SentenceTableRow.svelte';
 	import { PlusSolid } from 'flowbite-svelte-icons';
 
 	const handleAddSentence = () => {
-		$activeCaseStore.sentences = [...$activeCaseStore.sentences, createEmptySentence()];
+		$formStore.sentences = [...$formStore.sentences, createEmptySentence()];
 	};
 </script>
 
@@ -42,7 +41,7 @@
 			</TableHeadCell>
 		</TableHead>
 		<TableBody>
-			{#each $activeCaseStore.sentences as sentence, sentenceIndex (sentence.id)}
+			{#each $formStore.sentences as sentence, sentenceIndex (sentence.id)}
 				<SentenceTableRow {sentence} {sentenceIndex} />
 			{/each}
 		</TableBody>

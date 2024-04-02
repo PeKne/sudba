@@ -4,12 +4,12 @@ import { readTextFile } from '@tauri-apps/api/fs';
 
 import { get } from 'svelte/store';
 
-import { activeCaseStore, isUnsavedStore, lastSavedState } from './caseStore';
+import { formStore, isFormUnsavedStore, lastSavedSnaphotStore } from './caseStore';
 import { S } from '@mobily/ts-belt';
 
 // TODO: check if there are unsaved changes first, if yes offer save
 export const confirmUnsavedChanges = async () => {
-	if (!get(isUnsavedStore)) return true;
+	if (!get(isFormUnsavedStore)) return true;
 
 	return await ask(
 		"Pokud stisknete 'Ano', přijdete o všechny neuložené změny. Chcete pokračovat?",
@@ -46,10 +46,10 @@ export const readCaseFromFile = async () => {
 		}
 
 		const fileContent = (await readTextFile(selectedPath as string)) ?? null;
-		lastSavedState.set(fileContent as string);
+		lastSavedSnaphotStore.set(fileContent as string);
 
 		const parsedValues = JSON.parse(fileContent as string);
-		activeCaseStore.set(parsedValues);
+		formStore.set(parsedValues);
 
 		message(`Případ ze souboru ${selectedPath} byl načten.`, {
 			title: 'soubor načten',
@@ -66,7 +66,7 @@ export const readCaseFromFile = async () => {
 export const saveCaseToFile = async () => {
 	try {
 		// TODO: handle versioning
-		const activeCaseValues = get(activeCaseStore);
+		const activeCaseValues = get(formStore);
 		const defaultPath = S.isNotEmpty(activeCaseValues.fileId)
 			? activeCaseValues.fileId
 			: new Date().toLocaleDateString('es-CL');
@@ -79,7 +79,7 @@ export const saveCaseToFile = async () => {
 			contents: serializedValues
 		});
 
-		lastSavedState.set(serializedValues);
+		lastSavedSnaphotStore.set(serializedValues);
 
 		message(`Případ byl uložen do souboru ${savePath}.sudba`, {
 			title: 'soubor uložen',

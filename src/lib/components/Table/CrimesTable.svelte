@@ -8,24 +8,18 @@
 		TableHead,
 		TableHeadCell
 	} from 'flowbite-svelte';
-	import type { Crime } from '../../types';
-	import { activeCaseStore, createEmptyCrime } from '../../caseStore';
-	// import SortButton from '../atoms/SortButton.svelte';
+	import type { RawCrime } from '../../types';
+	import { formStore, createEmptyCrime } from '../../caseStore';
 	import CrimeTableRow from './CrimeTableRow.svelte';
 	import { PlusSolid } from 'flowbite-svelte-icons';
 
 	export let wasSentenced = false;
-	export let crimes: Crime[] = [];
-	// $: sortFunction = wasSentenced ? activeCaseStore.sortSentencedCrimes : activeCaseStore.sortCrimes;
+	export let crimes: RawCrime[] = [];
 	$: header = wasSentenced ? 'Odsouzené' : 'K odsouzení';
 
 	$: handleAddCrime = wasSentenced
-		? () =>
-				($activeCaseStore.sentencedCrimes = [
-					...$activeCaseStore.sentencedCrimes,
-					createEmptyCrime()
-				])
-		: () => ($activeCaseStore.crimes = [...$activeCaseStore.crimes, createEmptyCrime()]);
+		? () => ($formStore.sentencedCrimes = [...$formStore.sentencedCrimes, createEmptyCrime()])
+		: () => ($formStore.crimes = [...$formStore.crimes, createEmptyCrime()]);
 </script>
 
 <Heading tag="h4">{header}:</Heading>

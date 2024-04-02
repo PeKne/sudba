@@ -3,17 +3,17 @@
 
 	import Timeline from './Timeline/Timeline.svelte';
 	import { InfoCircleSolid } from 'flowbite-svelte-icons';
-	import { resultActiveCaseStore, isErrorActive, activeCaseStore } from '../caseStore';
+	import { validatedFormStore, isErrorStore, formStore } from '../caseStore';
 	import { getResultLevels } from '../caseSolver';
 	import { A } from '@mobily/ts-belt';
 
-	$: isAlertDisplayed = $isErrorActive || $activeCaseStore.crimes.length === 0;
-	$: alertColor = ($isErrorActive ? 'red' : 'dark') as 'red' | 'dark';
-	$: alertMessage = $isErrorActive
+	$: isAlertDisplayed = $isErrorStore || $formStore.crimes.length === 0;
+	$: alertColor = ($isErrorStore ? 'red' : 'dark') as 'red' | 'dark';
+	$: alertMessage = $isErrorStore
 		? 'Výsledek nelze zobrazit. Ve formuláři se vyskytují chyby.'
 		: 'Zatím nebyly zadána žádná data. Pro zobrazení časové osy, začněte vyplňovat formulář.';
 
-	$: resultMessages = getResultLevels($resultActiveCaseStore);
+	$: resultMessages = getResultLevels($validatedFormStore);
 </script>
 
 <AccordionItem open>
