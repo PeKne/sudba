@@ -5,17 +5,21 @@ import type {
 	CrimeId,
 	LabeledCrime,
 	ResultCaseStore,
-	ResultSentence,
 	Sentence,
 	SentenceId
 } from './types';
 import { v4 as uuid4 } from 'uuid';
-import { G, A, D } from '@mobily/ts-belt';
+import { validateCrimes, validateSentences } from './validators';
+import { D } from '@mobily/ts-belt';
 
 export const generateCrimeId = (): CrimeId => uuid4() as CrimeId;
 export const generateSentenceId = (): CrimeId => uuid4() as CrimeId;
 
-export const createEmptyCrime = (): Crime => ({ id: uuid4() as CrimeId });
+export const createEmptyCrime = (): Crime => ({
+	id: uuid4() as CrimeId,
+	isAttack: 'no',
+	isMainOffender: false
+});
 export const createEmptySentence = (): Sentence => ({
 	id: uuid4() as SentenceId,
 	isLegallyForced: false,
@@ -33,6 +37,7 @@ export const defaultCaseValue: Case = {
 };
 
 import { readable } from 'svelte/store';
+import { groupAttacksToCrimes } from './formatters';
 
 const deepCopy = (obj: object) => JSON.parse(JSON.stringify(obj));
 
@@ -46,6 +51,8 @@ export const time = readable(new Date(), function start(set) {
 	};
 });
 
+// TODO: rename to FormStore!
+// also rename Crime, Sentence etc. types to something like ...Input or ...Raw
 const createCaseStore = () => {
 	const store = writable<Case>(deepCopy(defaultCaseValue));
 
@@ -85,26 +92,35 @@ export const isUnsavedStore = derived(
 );
 
 export const resultActiveCaseStore = derived([activeCaseStore, time], ([$activeCase]) => {
-	const sentencedCrimes = $activeCase.sentencedCrimes
-		// .filter((c) => c.date)
-		.map((crime, index) => ({
-			...crime,
-			label: `OSK${index + 1}`
-		}));
+	const sentencedCrimes = $activeCase.sentencedCrimes.map((crime, index) => ({
+		...crime,
+		label: `OSK${index + 1}`
+	}));
+
+	const attacks = $activeCase.crimes
+		.filter((crime) => crime.isAttack !== 'no')
+		.sort(function (crime1, crime2) {
+			return new Date(crime1.date!).getMilliseconds() - new Date(crime2.date!).getMilliseconds();
+		})
+		.map((attack, index) => ({ ...attack, label: `U${index + 1}` }));
+
+	const attackGroups = groupAttacksToCrimes(attacks);
+	console.log('🚀 ~ resultActiveCaseStore ~ attackGroups:', attackGroups);
+
 	const resultData = {
 		...$activeCase,
+		attacks,
+		attackGroups,
 		crimes: $activeCase.crimes
-			// .filter((c) => c.date)
+			.filter((crime) => crime.isAttack === 'no')
 			.map((crime, index) => ({ ...crime, label: `SK${index + 1}` })),
-		sentences: $activeCase.sentences
-			// .filter((s) => s.dateAnnounced)
-			.map((sentence, index) => ({
-				...sentence,
-				label: `R${index + 1}`,
-				crimesData: sentencedCrimes.filter(
-					(crime) => sentence.crimes?.includes(crime.id) ?? false
-				) as LabeledCrime[]
-			})),
+		sentences: $activeCase.sentences.map((sentence, index) => ({
+			...sentence,
+			label: `R${index + 1}`,
+			crimesData: sentencedCrimes.filter(
+				(crime) => sentence.crimes?.includes(crime.id) ?? false
+			) as LabeledCrime[]
+		})),
 		sentencedCrimes
 	} as ResultCaseStore;
 
@@ -117,81 +133,16 @@ export const resultActiveCaseStore = derived([activeCaseStore, time], ([$activeC
 	return resultData;
 });
 
-type SenteceErrors = Record<keyof Sentence, string>;
-type CrimeErrors = Record<keyof Crime, string>;
-
-const validateSentences = (sentences: ResultSentence[]) => {
-	const sentenceErrors: Record<SentenceId, SenteceErrors> = {};
-	sentences.forEach((sentence) => {
-		sentenceErrors[sentence.id] = {} as SenteceErrors;
-		const { crimesData, dateAnnounced, dateLegallyForced, cancelsSentenceData } = sentence;
-		if (!G.isArray(crimesData) || A.isEmpty(crimesData)) {
-			sentenceErrors[sentence.id].crimes = 'Vyberte alespoň jeden skutek.';
-		}
-
-		if (G.isArray(crimesData) && dateAnnounced) {
-			const laterCrimes = crimesData.filter(
-				(crime) => crime.date && new Date(crime.date) > new Date(dateAnnounced)
-			);
-
-			if (laterCrimes.length > 0) {
-				sentenceErrors[
-					sentence.id
-				].crimes = `Datum vyhlášení rozsudku nesmí být dříve než datum spáchání skutku ${laterCrimes[0].label}.`;
-			}
-		}
-
-		if (cancelsSentenceData && cancelsSentenceData.dateAnnounced) {
-			if (dateAnnounced && new Date(dateAnnounced) < new Date(cancelsSentenceData.dateAnnounced)) {
-				sentenceErrors[
-					sentence.id
-				].cancelsSentece = `Datum zrušení nesmí být dříve než datum vyhlášení rozsudku ${cancelsSentenceData.label}.`;
-			}
-		}
-
-		if (G.isNullable(dateAnnounced)) {
-			sentenceErrors[sentence.id].dateAnnounced = 'Povinné pole.';
-		}
-
-		if (
-			dateAnnounced &&
-			dateLegallyForced &&
-			new Date(dateAnnounced) > new Date(dateLegallyForced)
-		) {
-			sentenceErrors[sentence.id].dateLegallyForced =
-				'Datum nabití právní moci nesmí být dříve než datum vyhlášení rozsudku.';
-		}
-
-		if (D.isEmpty(sentenceErrors[sentence.id])) delete sentenceErrors[sentence.id];
-	});
-
-	return sentenceErrors;
-};
-
-const validateCrimes = (crimes: Crime[]) => {
-	const crimeErrors: Record<CrimeId, CrimeErrors> = {};
-	crimes.forEach((crime) => {
-		const { id, date } = crime;
-		crimeErrors[id] = {} as CrimeErrors;
-		if (G.isNullable(date)) {
-			crimeErrors[id].date = 'Vyplňte datum.';
-		}
-		if (D.isEmpty(crimeErrors[id])) delete crimeErrors[id];
-	});
-
-	return crimeErrors;
-};
-
-export const formErrorsStore = derived(
-	[resultActiveCaseStore, time],
-	([$resultActiveCaseStore]) => {
-		return {
-			crimes: validateCrimes($resultActiveCaseStore.crimes),
-			sentencedCrimes: validateCrimes($resultActiveCaseStore.sentencedCrimes),
-			sentences: validateSentences($resultActiveCaseStore.sentences)
-		};
-	}
-);
+export const formErrorsStore = derived([activeCaseStore, time], ([$activeCaseStore]) => {
+	return {
+		crimes: validateCrimes($activeCaseStore.crimes),
+		sentencedCrimes: validateCrimes($activeCaseStore.sentencedCrimes),
+		sentences: validateSentences({
+			sentences: $activeCaseStore.sentences,
+			sentencedCrimes: $activeCaseStore.sentencedCrimes
+		})
+	};
+});
 
 export const isErrorActive = derived([formErrorsStore, time], ([$formErrorsStore]) => {
 	return (

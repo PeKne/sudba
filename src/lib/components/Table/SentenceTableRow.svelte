@@ -16,6 +16,7 @@
 		$activeCaseStore.sentences = sentencesCopy;
 	};
 
+	$: errors = $formErrorsStore.sentences[sentence.id] ?? {};
 	$: crimeOptions = $activeCaseStore.sentencedCrimes.map((crime, index) => ({
 		value: crime.id,
 		name: `OSK${index + 1}`
@@ -31,8 +32,6 @@
 				name: `R${s.originalIndex + 1}`
 			}))
 	];
-
-	$: errors = $formErrorsStore.sentences[sentence.id] ?? {};
 
 	const handleCanceledSentenceChange = (event: Event) => {
 		const input = event.target as HTMLInputElement;

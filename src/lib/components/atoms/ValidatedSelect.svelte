@@ -8,5 +8,6 @@
 </script>
 
 <ErrorWrapper {error}>
+	<!-- TODO: disabled color -->
 	<Select {...$$props} bind:value color="green" dropdownClass="bg-white" on:change />
 </ErrorWrapper>

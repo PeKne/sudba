@@ -100,7 +100,7 @@ export const calculateCaseResult = (inputCase: ResultCaseStore): CaseResult | nu
 			result.SOUHRN.canceledSentences = getConnectedSenteces(firstSentence.id, sentences);
 		}
 
-		if (firstSentence.dateAnnounced <= crime.date) {
+		if (!firstSentence.dateAnnounced || firstSentence.dateAnnounced <= crime.date) {
 			result.SAMOSTATNY.crimes.push(crime);
 		}
 	});

@@ -38,6 +38,29 @@ const dotOptions: Plot.DotOptions = {
 	fill: '#000'
 };
 
+const plotAttackGroups = () => {
+	const timelineArray: Plot.Markish[] = [];
+	const attackGroups = get(resultActiveCaseStore).attackGroups;
+
+	attackGroups.forEach((group) => {
+		const attacksData = group.attacks.map((attack) => ({
+			...attack,
+			date: new Date(attack.date)
+		}));
+
+		timelineArray.push(Plot.dot(attacksData, dotOptions));
+		timelineArray.push(
+			Plot.text(attacksData, {
+				...markOptions,
+				fill: group.color
+			})
+		);
+		timelineArray.push(Plot.text(attacksData, datePlotOptions));
+	});
+
+	return timelineArray;
+};
+
 const plotCrimes = () => {
 	const crimesData = get(resultActiveCaseStore).crimes.map((crime) => ({
 		...crime,
@@ -92,7 +115,6 @@ const plotSentences = () => {
 };
 
 export const plotTimeline = (timelineDiv?: HTMLDivElement) => {
-	console.log(timelineDiv);
 	if (timelineDiv !== undefined) {
 		timelineDiv.firstChild?.remove(); // remove old chart, if any
 		timelineDiv.append(
@@ -103,7 +125,7 @@ export const plotTimeline = (timelineDiv?: HTMLDivElement) => {
 				marginRight: TIMELINE_MARGINS,
 				x: { axis: null },
 				y: { axis: null, domain: [-TIMELINE_HEIGHT / 2, TIMELINE_HEIGHT / 2] },
-				marks: [Plot.ruleY([0]), ...plotCrimes(), ...plotSentences()]
+				marks: [Plot.ruleY([0]), ...plotCrimes(), ...plotSentences(), ...plotAttackGroups()]
 			})
 		);
 	}

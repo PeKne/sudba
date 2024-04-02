@@ -3,11 +3,11 @@
 
 	import Timeline from './Timeline/Timeline.svelte';
 	import { InfoCircleSolid } from 'flowbite-svelte-icons';
-	import { resultActiveCaseStore, isErrorActive } from '../caseStore';
+	import { resultActiveCaseStore, isErrorActive, activeCaseStore } from '../caseStore';
 	import { getResultLevels } from '../caseSolver';
 	import { A } from '@mobily/ts-belt';
 
-	$: isAlertDisplayed = $isErrorActive || $resultActiveCaseStore.crimes.length === 0;
+	$: isAlertDisplayed = $isErrorActive || $activeCaseStore.crimes.length === 0;
 	$: alertColor = ($isErrorActive ? 'red' : 'dark') as 'red' | 'dark';
 	$: alertMessage = $isErrorActive
 		? 'Výsledek nelze zobrazit. Ve formuláři se vyskytují chyby.'

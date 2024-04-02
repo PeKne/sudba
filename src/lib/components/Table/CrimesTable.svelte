@@ -17,7 +17,7 @@
 	export let wasSentenced = false;
 	export let crimes: Crime[] = [];
 	// $: sortFunction = wasSentenced ? activeCaseStore.sortSentencedCrimes : activeCaseStore.sortCrimes;
-	$: header = wasSentenced ? 'Odsouzené skutky' : 'Skutky k odsouzení';
+	$: header = wasSentenced ? 'Odsouzené' : 'K odsouzení';
 
 	$: handleAddCrime = wasSentenced
 		? () =>
@@ -33,6 +33,10 @@
 	<TableHead class="divide-y">
 		<TableHeadCell>Značka</TableHeadCell>
 		<TableHeadCell>Datum</TableHeadCell>
+		<TableHeadCell>Pravní kvalifikace</TableHeadCell>
+		<TableHeadCell>Jedná se o útok?</TableHeadCell>
+		<TableHeadCell>Byl hlavním pachatelem?</TableHeadCell>
+		<TableHeadCell>Datum sdělení obvinění</TableHeadCell>
 		<TableHeadCell>Škoda odcizením</TableHeadCell>
 		<TableHeadCell>Škoda poškozením</TableHeadCell>
 		<TableHeadCell>Škoda celkem</TableHeadCell>

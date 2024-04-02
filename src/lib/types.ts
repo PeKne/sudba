@@ -5,9 +5,15 @@ export type Offender = {
 	name: string;
 };
 
+export type AttackOption = 'yes' | 'no' | 'maybe';
+
 export type Crime = {
 	id: CrimeId;
 	date?: string;
+	paragraph?: string;
+	isAttack?: AttackOption;
+	isMainOffender: boolean;
+	dateDisclosed?: string;
 	valueStolen?: number;
 	valueDestroyed?: number;
 	note?: string;
@@ -42,7 +48,14 @@ export type ResultSentence = Sentence & {
 	label: string;
 };
 
+export type AttackGroup = {
+	color: string;
+	attacks: LabeledCrime[];
+};
+
 export type ResultCaseStore = {
+	attacks: LabeledCrime[];
+	attackGroups: AttackGroup[];
 	crimes: LabeledCrime[];
 	sentencedCrimes: LabeledCrime[];
 	sentences: ResultSentence[];

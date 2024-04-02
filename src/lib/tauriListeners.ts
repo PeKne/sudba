@@ -16,7 +16,6 @@ export const attachTauriListeners = () => {
 	});
 
 	appWindow.onCloseRequested(async (event) => {
-		console.log(event);
 		const confirmed = await confirmUnsavedChanges();
 		if (!confirmed) {
 			// user did not confirm closing the window; let's prevent it

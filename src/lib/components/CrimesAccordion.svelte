@@ -6,7 +6,7 @@
 </script>
 
 <AccordionItem open>
-	<span slot="header"><Heading tag="h4">Skutky:</Heading></span>
+	<span slot="header"><Heading tag="h4">Skutky / Útoky:</Heading></span>
 	<CrimesTable bind:crimes={$activeCaseStore.crimes} />
 	<CrimesTable bind:crimes={$activeCaseStore.sentencedCrimes} wasSentenced />
 </AccordionItem>
