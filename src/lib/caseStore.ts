@@ -90,6 +90,7 @@ export const isFormUnsavedStore = derived(
 	}
 );
 
+// TODO: no undefines should be present here
 export const validatedFormStore = derived([formStore, timeStore], ([$activeCase]) => {
 	const sentencedCrimes = $activeCase.sentencedCrimes.map((crime, index) => ({
 		...crime,

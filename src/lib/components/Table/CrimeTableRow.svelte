@@ -107,7 +107,7 @@
 		/></TableBodyCell
 	>
 
-	<TableBodyCell
+	<!-- <TableBodyCell
 		><ValidatedInput
 			type="number"
 			bind:value={crime.valueStolen}
@@ -122,7 +122,7 @@
 			error={errors.valueDestroyed}
 			disabled={areAttackOptionsDisabled}
 		/></TableBodyCell
-	>
+	> -->
 	<TableBodyCell><MyTextarea bind:value={crime.note} /></TableBodyCell>
 	<TableBodyCell class="flex items-center justify-center space-x-2">
 		{#if crimeIndex !== 0}

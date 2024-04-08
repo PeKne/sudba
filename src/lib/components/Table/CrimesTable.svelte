@@ -15,7 +15,7 @@
 
 	export let wasSentenced = false;
 	export let crimes: RawCrime[] = [];
-	$: header = wasSentenced ? 'Odsouzené' : 'K odsouzení';
+	$: header = wasSentenced ? 'Odsouzené' : 'K řešení';
 
 	$: handleAddCrime = wasSentenced
 		? () => ($formStore.sentencedCrimes = [...$formStore.sentencedCrimes, createEmptyCrime()])
@@ -31,9 +31,9 @@
 		<TableHeadCell>Jedná se o útok?</TableHeadCell>
 		<TableHeadCell>Byl hlavním pachatelem?</TableHeadCell>
 		<TableHeadCell>Datum sdělení obvinění</TableHeadCell>
-		<TableHeadCell>Škoda odcizením</TableHeadCell>
+		<!-- <TableHeadCell>Škoda odcizením</TableHeadCell>
 		<TableHeadCell>Škoda poškozením</TableHeadCell>
-		<TableHeadCell>Škoda celkem</TableHeadCell>
+		<TableHeadCell>Škoda celkem</TableHeadCell> -->
 		<TableHeadCell>Poznámka</TableHeadCell>
 		<TableHeadCell
 			><div class="flex items-center justify-center space-x-2">

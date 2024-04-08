@@ -1,110 +1,113 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { A, D, F, G, pipe } from '@mobily/ts-belt';
 import type { ValidatedForm, ValidatedCrime, ValidatedSentence, SentenceId } from './types';
 
-type ResultType = 'UHRN' | 'SOUHRN' | 'SAMOSTATNY';
-
-type CaseResultLevel = {
+type LevelCommon = {
 	crimes: ValidatedCrime[];
-	canceledSentences?: ValidatedSentence[];
 };
 
-type CaseResult = {
-	SOUHRN: { crimes: ValidatedCrime[]; canceledSentences: ValidatedSentence[] };
-	SAMOSTATNY: { crimes: ValidatedCrime[] }; // Contains also UHRNY
+// ještě nepoučený pachatel znovu páchá
+type SouhrnLevel = LevelCommon & {
+	canceledSentences: ValidatedSentence[];
+	readonly __type: 'SOUHRN';
 };
 
-// TODO: move this elsewhere
+// nový trest, protože pachatel už měl být poučen předchozím rozsudkem
+type SamostatnyLevel = LevelCommon & {
+	readonly __type: 'SAMOSTATNY';
+};
+
+type Level = SouhrnLevel | SamostatnyLevel;
+
 const getConnectedSenteces = (
 	sentenceId: SentenceId,
 	sentences: ValidatedSentence[]
 ): ValidatedSentence[] => {
-	const result: ValidatedSentence[] = [];
+	const resultSentences: ValidatedSentence[] = [];
 	let nextSentence = sentences.find((s) => s.id === sentenceId);
+
 	while (G.isNotNullable(nextSentence)) {
-		result.push(nextSentence);
-		nextSentence = sentences.find((s) => s.cancelsSentece === nextSentence?.id);
+		resultSentences.push(nextSentence);
+		nextSentence = nextSentence.cancelsSentenceData;
 	}
 
-	return result;
+	return resultSentences;
 };
 
-const formatResultLevelMessage = (levelType: ResultType, caseLevel?: CaseResultLevel): string => {
-	if (G.isNullable(caseLevel)) {
-		return 'Nepodarilo se zjistit typ zlocinu';
-	}
+const isSouhrn = (value: Level): value is SouhrnLevel => value.__type === 'SOUHRN';
 
-	const { crimes, canceledSentences } = caseLevel;
+const formatResultLevelMessage = (level: Level): string => {
+	const { crimes } = level;
 
-	const sentenceCrimes =
-		canceledSentences?.reduce(
-			(accumulator: ValidatedCrime[], s) => accumulator.concat(s.crimesData),
-			[]
-		) ?? [];
+	const formattedCrimes = crimes.map((crime) => crime.label ?? 'UNDEFINED').join(', ');
 
-	const areSentencesPlural = A.length(canceledSentences ?? []) > 1;
+	if (isSouhrn(level)) {
+		const { canceledSentences } = level;
 
-	const stringifiedSentences = canceledSentences?.map((s) => s.label).join(', ') ?? '';
-	const joinedCrimes = A.isNotEmpty(sentenceCrimes) ? A.concat(sentenceCrimes, crimes) : crimes;
-
-	const formattedCrimes = joinedCrimes.map((crime) => crime.label ?? 'UNDEFINED').join(', ');
-	// const formattedCrimes = caseLevel.crimes.map((_, index) => `SK${index + 1}`).join(', ');
-
-	switch (levelType) {
-		case 'SOUHRN':
-			// const formattedCanceledSentence = caseLevel.canceledSentence!.
-			return `Souhrný trest ${formattedCrimes} při zrušení rozsudk${
-				areSentencesPlural ? 'ů' : 'u'
-			} ${stringifiedSentences}`;
-
-		case 'SAMOSTATNY':
-			// const formattedCanceledSentence = caseLevel.canceledSentence!.
-			return `${crimes.length > 1 ? 'Úhrný' : 'Samostatný'} trest ${formattedCrimes}`;
-
-		default:
-			return 'Nepodarilo se zjistit typ zlocinu';
+		const areSentencesPlural = A.length(canceledSentences ?? []) > 1;
+		const formattedSentences = canceledSentences?.map((s) => s.label).join(', ') ?? '';
+		return `Souhrný trest ${formattedCrimes} a současného zrušení výroku o trestu z rozsudk${
+			areSentencesPlural ? 'ů' : 'u'
+		} ${formattedSentences}`;
+	} else {
+		return `${crimes.length > 1 ? 'Úhrný' : 'Samostatný'} trest ${formattedCrimes}`;
 	}
 };
 
-export const getResultLevels = (inputCase: ValidatedForm): string[] => {
-	const resultLevels = calculateCaseResult(inputCase);
-
-	return pipe(
-		resultLevels!,
-		D.filter((value) => A.isNotEmpty(value.crimes)),
-		D.mapWithKey((levelType, caseLevel) => formatResultLevelMessage(levelType, caseLevel)),
-		D.values,
-		F.toMutable
-	);
-};
-
-export const calculateCaseResult = (inputCase: ValidatedForm): CaseResult | null => {
+export const getSolutionLevels = (inputCase: ValidatedForm): Level[] => {
 	const { crimes, sentences } = inputCase;
 	const sentencesCopy = [...sentences];
+	const result: Level[] = [];
 
-	const result: CaseResult = {
-		SOUHRN: { crimes: [], canceledSentences: [] },
-		SAMOSTATNY: { crimes: [] }
-	};
+	// TODO: rozdělit činy do skupin podle paragrafu a na ty nahlížet samostatně
+	// pak pro každou skupinu zvlášť:
+	//  - odstraň rozsudky, které proběhly před prvním skutkem k odsouzení
+	// - vezmi první rozsudek, vše co bylo před ním, jde k němu do souhrnu
+	// - vezmi další rozsudek a opakuj předchozí krok
+	// - pokud dojdou rozsudky, a ještě zbývají tresty, jedná se o samotný trest
 
-	const sortedSentences = sentencesCopy.sort(
-		(a, b) => a.dateAnnounced?.localeCompare(b.dateAnnounced ?? '') ?? 0
-	);
-	const firstSentence = sortedSentences[0];
+	let sortedCrimes = crimes.sort((a, b) => a.date?.localeCompare(b.date ?? '') ?? 0);
 
-	const validCrimes = crimes.filter((crime) => crime.date !== '' && crime.date !== 'Date');
+	const dateOfFirstCrime = sortedCrimes[0].date;
 
-	validCrimes.forEach((crime) => {
-		// SOUHRNY
-		if (firstSentence.dateAnnounced && firstSentence.dateAnnounced > crime.date) {
-			result.SOUHRN.crimes.push(crime);
-			result.SOUHRN.canceledSentences = getConnectedSenteces(firstSentence.id, sentences);
-		}
+	const sortedRelevantSentences = sentencesCopy
+		.sort((a, b) => a.dateAnnounced?.localeCompare(b.dateAnnounced ?? '') ?? 0)
+		.filter((sentence) => new Date(sentence.dateAnnounced!) >= new Date(dateOfFirstCrime));
 
-		if (!firstSentence.dateAnnounced || firstSentence.dateAnnounced <= crime.date) {
-			result.SAMOSTATNY.crimes.push(crime);
+	sortedRelevantSentences.forEach((sentence) => {
+		const precedingCrimes = sortedCrimes.filter(
+			(crime) => new Date(crime.date) < new Date(sentence.dateAnnounced!)
+		);
+
+		if (A.isNotEmpty(precedingCrimes)) {
+			result.push({
+				crimes: precedingCrimes,
+				canceledSentences: getConnectedSenteces(sentence.id, sentences),
+				__type: 'SOUHRN'
+			});
+
+			sortedCrimes = F.toMutable(A.sliceToEnd(sortedCrimes, precedingCrimes.length));
 		}
 	});
 
-	// const findClosest
+	if (A.isNotEmpty(sortedCrimes)) {
+		const lastLevel: SamostatnyLevel = {
+			crimes: sortedCrimes,
+			__type: 'SAMOSTATNY'
+		};
+
+		result.push(lastLevel);
+	}
+
 	return result;
+};
+
+export const solveCase = (inputCase: ValidatedForm): string[] => {
+	const resultLevels = getSolutionLevels(inputCase);
+
+	return pipe(
+		resultLevels,
+		A.map((level) => formatResultLevelMessage(level)),
+		F.toMutable
+	);
 };
