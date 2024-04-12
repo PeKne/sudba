@@ -2,18 +2,9 @@ import { writable, derived, readable } from 'svelte/store';
 import { D } from '@mobily/ts-belt';
 import { v4 as uuid4 } from 'uuid';
 
-import type {
-	RawForm,
-	RawCrime,
-	CrimeId,
-	ValidatedCrime,
-	ValidatedForm,
-	RawSentence,
-	SentenceId
-} from './types';
+import type { RawForm, RawCrime, CrimeId, RawSentence, SentenceId } from './types';
 
-import { groupAttacksToCrimes } from './formatters';
-import { validateCrimes, validateSentences } from './validators';
+import { cleanFormData, validateCrimes, validateSentences } from './validators';
 
 const deepCopy = (obj: object) => JSON.parse(JSON.stringify(obj));
 export const generateCrimeId = (): CrimeId => uuid4() as CrimeId;
@@ -57,25 +48,25 @@ const createFormStore = () => {
 
 	return {
 		...store,
-		sortSentences: () =>
-			store.update((activeCase) => {
-				activeCase.sentences = [
-					...activeCase.sentences.sort((a, b) => a.dateAnnounced.localeCompare(b.dateAnnounced))
-				];
-				return activeCase;
-			}),
-		sortCrimes: () =>
-			store.update((activeCase) => {
-				activeCase.crimes = [...activeCase.crimes.sort((a, b) => a.date.localeCompare(b.date))];
-				return activeCase;
-			}),
-		sortSentencedCrimes: () =>
-			store.update((activeCase) => {
-				activeCase.sentencedCrimes = [
-					...activeCase.sentencedCrimes.sort((a, b) => a.date.localeCompare(b.date))
-				];
-				return activeCase;
-			}),
+		// sortSentences: () =>
+		// 	store.update((activeCase) => {
+		// 		activeCase.sentences = [
+		// 			...activeCase.sentences.sort((a, b) => a.dateAnnounced.localeCompare(b.dateAnnounced))
+		// 		];
+		// 		return activeCase;
+		// 	}),
+		// sortCrimes: () =>
+		// 	store.update((activeCase) => {
+		// 		activeCase.crimes = [...activeCase.crimes.sort((a, b) => a.date.localeCompare(b.date))];
+		// 		return activeCase;
+		// 	}),
+		// sortSentencedCrimes: () =>
+		// 	store.update((activeCase) => {
+		// 		activeCase.sentencedCrimes = [
+		// 			...activeCase.sentencedCrimes.sort((a, b) => a.date && a.date?.localeCompare(b.date))
+		// 		];
+		// 		return activeCase;
+		// 	}),
 		reset: () => store.set(deepCopy(defaultFormValues))
 	};
 };
@@ -89,48 +80,10 @@ export const isFormUnsavedStore = derived(
 		return JSON.stringify($activeCase) !== $lastSavedState;
 	}
 );
-
 // TODO: no undefines should be present here
-export const validatedFormStore = derived([formStore, timeStore], ([$activeCase]) => {
-	const sentencedCrimes = $activeCase.sentencedCrimes.map((crime, index) => ({
-		...crime,
-		label: `OSK${index + 1}`
-	}));
-
-	const attacks = $activeCase.crimes
-		.filter((crime) => crime.isAttack !== 'no')
-		.sort(function (crime1, crime2) {
-			return new Date(crime1.date!).getMilliseconds() - new Date(crime2.date!).getMilliseconds();
-		})
-		.map((attack, index) => ({ ...attack, label: `U${index + 1}` }));
-
-	const attackGroups = groupAttacksToCrimes(attacks);
-
-	const resultData = {
-		...$activeCase,
-		attacks,
-		attackGroups,
-		crimes: $activeCase.crimes
-			.filter((crime) => crime.isAttack === 'no')
-			.map((crime, index) => ({ ...crime, label: `SK${index + 1}` })),
-		sentences: $activeCase.sentences.map((sentence, index) => ({
-			...sentence,
-			label: `R${index + 1}`,
-			crimesData: sentencedCrimes.filter(
-				(crime) => sentence.crimes?.includes(crime.id) ?? false
-			) as ValidatedCrime[]
-		})),
-		sentencedCrimes
-	} as ValidatedForm;
-
-	// append related sentence data to each sentence
-	resultData.sentences = resultData.sentences.map((sentence) => ({
-		...sentence,
-		cancelsSentenceData: resultData.sentences.find((s) => s.id === sentence.cancelsSentece)
-	}));
-
-	return resultData;
-});
+export const validatedFormStore = derived([formStore, timeStore], ([$activeCase]) =>
+	cleanFormData($activeCase)
+);
 
 export const formErrorsStore = derived([formStore, timeStore], ([$formStore]) => {
 	return {

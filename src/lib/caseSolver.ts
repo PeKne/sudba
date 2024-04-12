@@ -12,12 +12,25 @@ type SouhrnLevel = LevelCommon & {
 	readonly __type: 'SOUHRN';
 };
 
-// nový trest, protože pachatel už měl být poučen předchozím rozsudkem
+// nedoplňuje předchozí rozsudek, protože pachatel už měl být poučen ==> přísnější trest
 type SamostatnyLevel = LevelCommon & {
 	readonly __type: 'SAMOSTATNY';
 };
 
 type Level = SouhrnLevel | SamostatnyLevel;
+
+//TODO: do not pass sentences on every call
+const getFirstSentenceDate = (
+	sentence: ValidatedSentence,
+	allSetences: ValidatedSentence[]
+): Date => {
+	let lastSentence = sentence;
+	while (G.isNotNullable(lastSentence.cancelsSentece)) {
+		lastSentence = allSetences.find((s) => s.id === lastSentence.cancelsSentece)!;
+	}
+
+	return new Date(lastSentence.dateAnnounced!);
+};
 
 const getConnectedSenteces = (
 	sentenceId: SentenceId,
@@ -28,13 +41,13 @@ const getConnectedSenteces = (
 
 	while (G.isNotNullable(nextSentence)) {
 		resultSentences.push(nextSentence);
-		nextSentence = nextSentence.cancelsSentenceData;
+		nextSentence = sentences.find((s) => s.cancelsSentece === nextSentence?.id);
 	}
 
 	return resultSentences;
 };
 
-const isSouhrn = (value: Level): value is SouhrnLevel => value.__type === 'SOUHRN';
+export const isSouhrn = (value: Level): value is SouhrnLevel => value.__type === 'SOUHRN';
 
 const formatResultLevelMessage = (level: Level): string => {
 	const { crimes } = level;
@@ -75,8 +88,11 @@ export const getSolutionLevels = (inputCase: ValidatedForm): Level[] => {
 		.filter((sentence) => new Date(sentence.dateAnnounced!) >= new Date(dateOfFirstCrime));
 
 	sortedRelevantSentences.forEach((sentence) => {
+		// this solves fake souhrn problem
+		const firstDateOfConnectedSentences = getFirstSentenceDate(sentence, sentencesCopy);
+
 		const precedingCrimes = sortedCrimes.filter(
-			(crime) => new Date(crime.date) < new Date(sentence.dateAnnounced!)
+			(crime) => new Date(crime.date) < firstDateOfConnectedSentences
 		);
 
 		if (A.isNotEmpty(precedingCrimes)) {

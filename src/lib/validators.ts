@@ -1,6 +1,15 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { G, D, A } from '@mobily/ts-belt';
-import type { RawSentence, RawCrime, SentenceId, CrimeId } from './types';
+import type {
+	RawSentence,
+	RawCrime,
+	SentenceId,
+	CrimeId,
+	RawForm,
+	ValidatedCrime,
+	ValidatedForm
+} from './types';
+import { groupAttacksToCrimes } from './formatters';
 
 type SenteceErrors = Record<keyof RawSentence, string>;
 type CrimeErrors = Record<keyof RawCrime, string>;
@@ -85,4 +94,45 @@ export const validateCrimes = (crimes: RawCrime[]) => {
 	});
 
 	return crimeErrors;
+};
+
+export const cleanFormData = (form: RawForm) => {
+	const sentencedCrimes = form.sentencedCrimes.map((crime, index) => ({
+		...crime,
+		label: `OSK${index + 1}`
+	}));
+
+	const attacks = form.crimes
+		.filter((crime) => crime.isAttack !== 'no')
+		.sort(function (crime1, crime2) {
+			return new Date(crime1.date!).getMilliseconds() - new Date(crime2.date!).getMilliseconds();
+		})
+		.map((attack, index) => ({ ...attack, label: `U${index + 1}` }));
+
+	const attackGroups = groupAttacksToCrimes(attacks);
+
+	const resultData = {
+		...form,
+		attacks,
+		attackGroups,
+		crimes: form.crimes
+			.filter((crime) => crime.isAttack === 'no')
+			.map((crime, index) => ({ ...crime, label: `SK${index + 1}` })),
+		sentences: form.sentences.map((sentence, index) => ({
+			...sentence,
+			label: `R${index + 1}`,
+			crimesData: sentencedCrimes.filter(
+				(crime) => sentence.crimes?.includes(crime.id) ?? false
+			) as ValidatedCrime[]
+		})),
+		sentencedCrimes
+	} as ValidatedForm;
+
+	// append related sentence data to each sentence
+	resultData.sentences = resultData.sentences.map((sentence) => ({
+		...sentence,
+		cancelsSentenceData: resultData.sentences.find((s) => s.id === sentence.cancelsSentece)
+	}));
+
+	return resultData;
 };
