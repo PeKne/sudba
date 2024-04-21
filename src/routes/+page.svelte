@@ -50,7 +50,7 @@
 			><UploadSolid class="me-2" />Načíst</Button
 		>
 		<Button size="lg" color="primary" on:click={resetForm}><FileSolid class="me-2" />Nový</Button>
-		<Select {items} on:change={handleSelectTestCase} />
+		<Select {items} on:change={handleSelectTestCase} placeholder="vyberte testový příklad" />
 	</div>
 </div>
 

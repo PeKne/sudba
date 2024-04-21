@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { A, D, F, G, pipe } from '@mobily/ts-belt';
+import { A, F, G, pipe } from '@mobily/ts-belt';
 import type { ValidatedForm, ValidatedCrime, ValidatedSentence, SentenceId } from './types';
 
 type LevelCommon = {
@@ -59,7 +59,7 @@ const formatResultLevelMessage = (level: Level): string => {
 
 		const areSentencesPlural = A.length(canceledSentences ?? []) > 1;
 		const formattedSentences = canceledSentences?.map((s) => s.label).join(', ') ?? '';
-		return `Souhrný trest ${formattedCrimes} a současného zrušení výroku o trestu z rozsudk${
+		return `Souhrný trest ${formattedCrimes} a současného zrušení výroku o trestu z rozsudk${
 			areSentencesPlural ? 'ů' : 'u'
 		} ${formattedSentences}`;
 	} else {
@@ -81,6 +81,8 @@ export const getSolutionLevels = (inputCase: ValidatedForm): Level[] => {
 
 	let sortedCrimes = crimes.sort((a, b) => a.date?.localeCompare(b.date ?? '') ?? 0);
 
+	if (A.isEmpty(sortedCrimes)) return [];
+
 	const dateOfFirstCrime = sortedCrimes[0].date;
 
 	const sortedRelevantSentences = sentencesCopy
@@ -94,6 +96,19 @@ export const getSolutionLevels = (inputCase: ValidatedForm): Level[] => {
 		const precedingCrimes = sortedCrimes.filter(
 			(crime) => new Date(crime.date) < firstDateOfConnectedSentences
 		);
+
+		// if there are no preceding crimes, add the sentence to the last souhrn level
+		if (A.isEmpty(precedingCrimes)) {
+			const lastouhrnLevel = A.reverse(result).find((level) => isSouhrn(level)) as
+				| SouhrnLevel
+				| undefined;
+
+			const isAlreadyPresent = !!lastouhrnLevel?.canceledSentences.find(
+				(s) => s.id === sentence.id
+			);
+
+			if (!isAlreadyPresent) lastouhrnLevel?.canceledSentences.push(sentence);
+		}
 
 		if (A.isNotEmpty(precedingCrimes)) {
 			result.push({
