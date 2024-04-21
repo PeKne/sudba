@@ -125,8 +125,6 @@
 	> -->
 	<TableBodyCell><MyTextarea bind:value={crime.note} /></TableBodyCell>
 	<TableBodyCell class="flex items-center justify-center space-x-2">
-		{#if crimeIndex !== 0}
-			<DeleteButton on:click={() => handleRemoveCrime(crimeIndex)} />
-		{/if}
+		<DeleteButton on:click={() => handleRemoveCrime(crimeIndex)} />
 	</TableBodyCell>
 </TableBodyRow>

@@ -8,5 +8,5 @@
 <AccordionItem open>
 	<span slot="header"><Heading tag="h4">Skutky / Útoky:</Heading></span>
 	<CrimesTable bind:crimes={$formStore.crimes} />
-	<CrimesTable bind:crimes={$formStore.sentencedCrimes} wasSentenced />
+	<CrimesTable bind:crimes={$formStore.sentencedCrimes} wasSentenced={true} />
 </AccordionItem>

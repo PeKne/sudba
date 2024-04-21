@@ -78,10 +78,18 @@ export const groupAttacksByIsMainOffenderAndParagraph = (attacks: RawCrime[]) =>
 		A.filter(G.isNotNullable)
 	) as unknown as RawCrime[][];
 };
-const GROUP_COLORS = ['#0000FF', '#00FF00', '#00FFFF', '#00FF99', '#00AAFF', '#FFFF00', '#FF00FF'];
+export const ATTACK_GROUP_COLORS = [
+	'#0000FF',
+	'#00FF00',
+	'#00FFFF',
+	'#00FF99',
+	'#00AAFF',
+	'#FFFF00',
+	'#FF00FF'
+];
 
 const assignColorToGroup = (groupIndex: number, group: RawCrime[]) => {
-	return { attacks: group, color: GROUP_COLORS[groupIndex] };
+	return { attacks: group, color: ATTACK_GROUP_COLORS[groupIndex] };
 };
 
 export const groupAttacksToCrimes = (attacks: RawCrime[]) => {

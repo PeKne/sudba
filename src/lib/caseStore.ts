@@ -27,8 +27,8 @@ export const defaultFormValues: RawForm = {
 		name: ''
 	},
 	crimes: [createEmptyCrime()],
-	sentencedCrimes: [createEmptyCrime()],
-	sentences: [createEmptySentence()]
+	sentencedCrimes: [],
+	sentences: []
 };
 
 export const timeStore = readable(new Date(), function start(set) {

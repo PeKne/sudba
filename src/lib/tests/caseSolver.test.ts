@@ -1,5 +1,6 @@
 import { getSolutionLevels, isSouhrn } from '../caseSolver';
 import {
+	testCase1,
 	testCase14,
 	testCase15,
 	testCase16,
@@ -7,7 +8,9 @@ import {
 	testCase3,
 	testCase4,
 	testCase5,
+	testCase6,
 	testCase7,
+	testCase8,
 	testCase9
 } from '../fixtures/caseSolver.fixture';
 import type { RawForm } from '../types';
@@ -19,6 +22,16 @@ const getTestResultLevels = (formValues: RawForm) => {
 };
 
 describe('getSolutionLevels', () => {
+	it(testCase1.fileId, () => {
+		const resultLevels = getTestResultLevels(testCase1);
+
+		expect(resultLevels.length).toBe(1);
+		expect(resultLevels[0].__type).toBe('SAMOSTATNY');
+		expect(resultLevels[0].crimes.length).toBe(2);
+		expect(resultLevels[0].crimes[0].id).toBe('A');
+		expect(resultLevels[0].crimes[1].id).toBe('B');
+	});
+
 	it(testCase2.fileId, () => {
 		const resultLevels = getTestResultLevels(testCase2);
 
@@ -70,7 +83,19 @@ describe('getSolutionLevels', () => {
 		expect(level1.canceledSentences[1].id).toBe('R-AB');
 	});
 
-	// TODO: test case 6
+	it(testCase6.fileId, () => {
+		const resultLevels = getTestResultLevels(testCase6);
+
+		expect(resultLevels.length).toBe(1);
+		const level1 = resultLevels[0];
+		expect(level1.crimes[0].id).toBe('C');
+
+		if (!isSouhrn(level1)) throw new Error('level should be souhrn!');
+
+		expect(level1.canceledSentences.length).toBe(2);
+		expect(level1.canceledSentences[0].id).toBe('R-A');
+		expect(level1.canceledSentences[1].id).toBe('R-AB');
+	});
 
 	it(testCase7.fileId, () => {
 		const resultLevels = getTestResultLevels(testCase7);
@@ -87,6 +112,19 @@ describe('getSolutionLevels', () => {
 
 		expect(level2.__type).toBe('SAMOSTATNY');
 		expect(level2.crimes[0].id).toBe('C');
+	});
+
+	it(testCase8.fileId, () => {
+		const resultLevels = getTestResultLevels(testCase8);
+
+		expect(resultLevels.length).toBe(1);
+		const level1 = resultLevels[0];
+		expect(level1.crimes[0].id).toBe('C');
+
+		if (!isSouhrn(level1)) throw new Error('level should be souhrn!');
+
+		expect(level1.canceledSentences[0].id).toBe('R-A');
+		expect(level1.canceledSentences[1].id).toBe('R-B');
 	});
 
 	it(testCase9.fileId, () => {
