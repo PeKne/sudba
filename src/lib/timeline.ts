@@ -1,10 +1,10 @@
 import * as Plot from '@observablehq/plot';
 import { validatedFormStore } from './caseStore';
 import { get } from 'svelte/store';
+import * as d3 from 'd3';
 
 const TIMELINE_WIDTH = 1400;
 const TIMELINE_HEIGHT = 200;
-const TIMELINE_MARGINS = 70;
 const DATE_MARGIN_BOTTOM = 28;
 const fontSizeInt = 16;
 
@@ -117,16 +117,39 @@ const plotSentences = () => {
 export const plotTimeline = (timelineDiv?: HTMLDivElement) => {
 	if (timelineDiv !== undefined) {
 		timelineDiv.firstChild?.remove(); // remove old chart, if any
-		timelineDiv.append(
-			Plot.plot({
+		const timelineD3Div = d3
+			.select(timelineDiv)
+			.style('margin-left', '70px')
+			.style('margin-right', '70px');
+
+		const zoomDiv = timelineD3Div.append('div');
+		const plotDiv = zoomDiv.append('div');
+
+		const insertPlot = ({ k, x }: { k: number; x: number }) => {
+			const plot = Plot.plot({
 				width: TIMELINE_WIDTH,
 				height: TIMELINE_HEIGHT,
-				marginLeft: TIMELINE_MARGINS,
-				marginRight: TIMELINE_MARGINS,
-				x: { axis: null },
+
+				x: {
+					axis: null,
+					transform: (d) => d3.utcYear.offset(d, 2000 - d.getUTCFullYear()),
+					range: [150 + x, TIMELINE_WIDTH * k + x - 150]
+				},
 				y: { axis: null, domain: [-TIMELINE_HEIGHT / 2, TIMELINE_HEIGHT / 2] },
 				marks: [Plot.ruleY([0]), ...plotCrimes(), ...plotSentences(), ...plotAttackGroups()]
-			})
-		);
+			});
+			plotDiv.html('').append(() => plot);
+		};
+
+		insertPlot({ k: 1, x: 0 });
+
+		const zoom = d3
+			.zoom()
+			.scaleExtent([0.5, 5])
+			.on('zoom', ({ transform }) => insertPlot(transform));
+
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		zoomDiv.call(zoom);
 	}
 };
