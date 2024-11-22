@@ -15,7 +15,7 @@
 	import SaveBadge from '../lib/components/SaveBadge.svelte';
 	import { attachTauriListeners } from '../lib/tauriListeners';
 	import { formStore } from '../lib/caseStore';
-	import { testCasesObject } from '../lib/fixtures/caseSolver.fixture';
+	import { testCaseFixtures } from '../lib/fixtures/caseSolver.fixture';
 
 	const resetForm = async () => {
 		if (!(await confirmUnsavedChanges())) return;
@@ -24,7 +24,7 @@
 	attachTauriListeners();
 
 	const items = pipe(
-		testCasesObject,
+		testCaseFixtures,
 		D.toPairs,
 		A.map(([key, value]) => ({ value: key, name: value.fileId })),
 		F.toMutable
@@ -32,9 +32,9 @@
 
 	const handleSelectTestCase = (event: Event) => {
 		const input = event.target as HTMLInputElement;
-		const testCaseKey = input.value as keyof typeof testCasesObject;
+		const testCaseKey = input.value;
 
-		const selectedTestCase = testCasesObject[testCaseKey];
+		const selectedTestCase = testCaseFixtures[testCaseKey];
 
 		formStore.set(selectedTestCase);
 	};

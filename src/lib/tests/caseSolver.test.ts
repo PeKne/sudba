@@ -1,22 +1,5 @@
 import { getSolutionLevels, isSouhrn } from '../caseSolver';
-import {
-	testCase1,
-	testCase10,
-	testCase11,
-	testCase12,
-	testCase13,
-	testCase14,
-	testCase15,
-	testCase16,
-	testCase2,
-	testCase3,
-	testCase4,
-	testCase5,
-	testCase6,
-	testCase7,
-	testCase8,
-	testCase9
-} from '../fixtures/caseSolver.fixture';
+import { testCaseFixtures } from '../fixtures/caseSolver.fixture';
 import type { RawForm } from '../types';
 import { cleanFormData } from '../validators';
 
@@ -26,8 +9,8 @@ const getTestResultLevels = (formValues: RawForm) => {
 };
 
 describe('getSolutionLevels', () => {
-	it(testCase1.fileId, () => {
-		const resultLevels = getTestResultLevels(testCase1);
+	it(testCaseFixtures.testCase1.fileId, () => {
+		const resultLevels = getTestResultLevels(testCaseFixtures.testCase1);
 
 		expect(resultLevels.length).toBe(1);
 		expect(resultLevels[0].__type).toBe('SAMOSTATNY');
@@ -36,8 +19,8 @@ describe('getSolutionLevels', () => {
 		expect(resultLevels[0].crimes[1].id).toBe('B');
 	});
 
-	it(testCase2.fileId, () => {
-		const resultLevels = getTestResultLevels(testCase2);
+	it(testCaseFixtures.testCase2.fileId, () => {
+		const resultLevels = getTestResultLevels(testCaseFixtures.testCase2);
 
 		expect(resultLevels.length).toBe(1);
 		expect(resultLevels[0].crimes[0].id).toBe('B');
@@ -47,8 +30,8 @@ describe('getSolutionLevels', () => {
 		expect(resultLevels[0].canceledSentences[0].id).toBe('R-A');
 	});
 
-	it(testCase3.fileId, () => {
-		const resultLevels = getTestResultLevels(testCase3);
+	it(testCaseFixtures.testCase3.fileId, () => {
+		const resultLevels = getTestResultLevels(testCaseFixtures.testCase3);
 
 		expect(resultLevels.length).toBe(2);
 		const level1 = resultLevels[0];
@@ -64,8 +47,8 @@ describe('getSolutionLevels', () => {
 		expect(level2.crimes[0].id).toBe('C');
 	});
 
-	it(testCase4.fileId, () => {
-		const resultLevels = getTestResultLevels(testCase4);
+	it(testCaseFixtures.testCase4.fileId, () => {
+		const resultLevels = getTestResultLevels(testCaseFixtures.testCase4);
 
 		expect(resultLevels.length).toBe(1);
 		const level1 = resultLevels[0];
@@ -73,8 +56,8 @@ describe('getSolutionLevels', () => {
 		expect(level1.__type).toBe('SAMOSTATNY');
 	});
 
-	it(testCase5.fileId, () => {
-		const resultLevels = getTestResultLevels(testCase5);
+	it(testCaseFixtures.testCase5.fileId, () => {
+		const resultLevels = getTestResultLevels(testCaseFixtures.testCase5);
 
 		expect(resultLevels.length).toBe(1);
 		const level1 = resultLevels[0];
@@ -87,8 +70,8 @@ describe('getSolutionLevels', () => {
 		expect(level1.canceledSentences[1].id).toBe('R-AB');
 	});
 
-	it(testCase6.fileId, () => {
-		const resultLevels = getTestResultLevels(testCase6);
+	it(testCaseFixtures.testCase6.fileId, () => {
+		const resultLevels = getTestResultLevels(testCaseFixtures.testCase6);
 
 		expect(resultLevels.length).toBe(1);
 		const level1 = resultLevels[0];
@@ -101,8 +84,8 @@ describe('getSolutionLevels', () => {
 		expect(level1.canceledSentences[1].id).toBe('R-AB');
 	});
 
-	it(testCase7.fileId, () => {
-		const resultLevels = getTestResultLevels(testCase7);
+	it(testCaseFixtures.testCase7.fileId, () => {
+		const resultLevels = getTestResultLevels(testCaseFixtures.testCase7);
 
 		expect(resultLevels.length).toBe(2);
 		const level1 = resultLevels[0];
@@ -118,8 +101,8 @@ describe('getSolutionLevels', () => {
 		expect(level2.crimes[0].id).toBe('C');
 	});
 
-	it(testCase8.fileId, () => {
-		const resultLevels = getTestResultLevels(testCase8);
+	it(testCaseFixtures.testCase8.fileId, () => {
+		const resultLevels = getTestResultLevels(testCaseFixtures.testCase8);
 
 		expect(resultLevels.length).toBe(1);
 		const level1 = resultLevels[0];
@@ -131,8 +114,8 @@ describe('getSolutionLevels', () => {
 		expect(level1.canceledSentences[1].id).toBe('R-B');
 	});
 
-	it(testCase9.fileId, () => {
-		const resultLevels = getTestResultLevels(testCase9);
+	it(testCaseFixtures.testCase9.fileId, () => {
+		const resultLevels = getTestResultLevels(testCaseFixtures.testCase9);
 
 		expect(resultLevels.length).toBe(1);
 		const level1 = resultLevels[0];
@@ -140,8 +123,8 @@ describe('getSolutionLevels', () => {
 		expect(level1.__type).toBe('SAMOSTATNY');
 	});
 
-	it(testCase10.fileId, () => {
-		const resultLevels = getTestResultLevels(testCase10);
+	it(testCaseFixtures.testCase10.fileId, () => {
+		const resultLevels = getTestResultLevels(testCaseFixtures.testCase10);
 
 		expect(resultLevels).toHaveLength(1);
 		const level1 = resultLevels[0];
@@ -155,8 +138,8 @@ describe('getSolutionLevels', () => {
 		expect(level1.canceledSentences[0].id).toBe('R-A1B');
 	});
 
-	it(testCase11.fileId, () => {
-		const resultLevels = getTestResultLevels(testCase11);
+	it(testCaseFixtures.testCase11.fileId, () => {
+		const resultLevels = getTestResultLevels(testCaseFixtures.testCase11);
 
 		expect(resultLevels).toHaveLength(1);
 		const level1 = resultLevels[0];
@@ -168,8 +151,8 @@ describe('getSolutionLevels', () => {
 		expect(level1.canceledSentences).toHaveLength(1);
 		expect(level1.canceledSentences[0].id).toBe('R-A1');
 	});
-	it(testCase12.fileId, () => {
-		const resultLevels = getTestResultLevels(testCase12);
+	it(testCaseFixtures.testCase12.fileId, () => {
+		const resultLevels = getTestResultLevels(testCaseFixtures.testCase12);
 
 		expect(resultLevels).toHaveLength(1);
 		const level1 = resultLevels[0];
@@ -183,8 +166,8 @@ describe('getSolutionLevels', () => {
 		expect(level1.canceledSentences[1].id).toBe('R-A1B');
 	});
 
-	it(testCase13.fileId, () => {
-		const resultLevels = getTestResultLevels(testCase13);
+	it(testCaseFixtures.testCase13.fileId, () => {
+		const resultLevels = getTestResultLevels(testCaseFixtures.testCase13);
 
 		expect(resultLevels).toHaveLength(1);
 		const level1 = resultLevels[0];
@@ -199,8 +182,8 @@ describe('getSolutionLevels', () => {
 		expect(level1.canceledSentences[0].id).toBe('R-A1A3');
 	});
 
-	it(testCase14.fileId, () => {
-		const resultLevels = getTestResultLevels(testCase14);
+	it(testCaseFixtures.testCase14.fileId, () => {
+		const resultLevels = getTestResultLevels(testCaseFixtures.testCase14);
 
 		expect(resultLevels.length).toBe(2);
 
@@ -215,8 +198,8 @@ describe('getSolutionLevels', () => {
 		expect(level2.canceledSentences[0].id).toBe('R-D');
 	});
 
-	it(testCase15.fileId, () => {
-		const resultLevels = getTestResultLevels(testCase15);
+	it(testCaseFixtures.testCase15.fileId, () => {
+		const resultLevels = getTestResultLevels(testCaseFixtures.testCase15);
 
 		expect(resultLevels.length).toBe(2);
 
@@ -232,8 +215,8 @@ describe('getSolutionLevels', () => {
 		expect(level2.__type).toBe('SAMOSTATNY');
 	});
 
-	it(testCase16.fileId, () => {
-		const resultLevels = getTestResultLevels(testCase16);
+	it(testCaseFixtures.testCase16.fileId, () => {
+		const resultLevels = getTestResultLevels(testCaseFixtures.testCase16);
 
 		expect(resultLevels.length).toBe(1);
 		const level1 = resultLevels[0];
