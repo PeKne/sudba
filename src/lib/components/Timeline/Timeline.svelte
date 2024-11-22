@@ -1,19 +1,13 @@
 <script lang="ts">
-	import { F } from '@mobily/ts-belt';
 	import { validatedFormStore } from '../../caseStore';
 	import { plotTimeline } from '../../timeline';
-	import type { ValidatedForm } from '../../types';
+
+	export let isDisplayed: boolean;
 
 	let div: HTMLDivElement | undefined;
-
-	let lastState: ValidatedForm | undefined;
 	$: {
-		// FIXME: Hack to update the function on every state change
-		if (!F.equals(lastState, $validatedFormStore)) {
-			lastState = $validatedFormStore;
-			plotTimeline(div);
-		}
+		plotTimeline(div, $validatedFormStore);
 	}
 </script>
 
-<div bind:this={div} role="img" />
+<div bind:this={div} role="img" style:display={isDisplayed ? 'block' : 'none'} />

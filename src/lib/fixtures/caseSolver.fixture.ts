@@ -383,196 +383,207 @@ export const testCase9: RawForm = {
 	]
 };
 
-// // TODO: attacks
-// export const testCase10: RawForm = {
-// 	fileId: '10.',
-// 	offender,
-// 	crimes: [
-// 		{
-// 			id: 'A2' as CrimeId,
-// 			note: 'A2',
-// 			isAttack: 'yes',
-// 			isMainOffender: false,
-// 			date: '2020-03-10',
-// 			paragraph: '1'
-// 		}
-// 	],
-// 	sentencedCrimes: [
-// 		{
-// 			id: 'A1' as CrimeId,
-// 			note: 'A1',
-// 			isAttack: 'yes',
-// 			isMainOffender: false,
-// 			date: '2020-02-10',
-// 			paragraph: '1'
-// 		},
-// 		{
-// 			id: 'B' as CrimeId,
-// 			note: 'B',
-// 			isAttack: 'no',
-// 			isMainOffender: false,
-// 			date: '2020-10-30',
-// 			paragraph: '2'
-// 		}
-// 	],
-// 	sentences: [
-// 		{
-// 			id: 'R-A1B' as SentenceId,
-// 			isLegallyForced: false,
-// 			crimes: ['A1', 'B'] as CrimeId[],
-// 			dateAnnounced: '2021-01-05'
-// 		}
-// 	]
-// };
+export const testCase10: RawForm = {
+	fileId: '10. utoky 1',
+	offender,
+	crimes: [
+		{
+			id: 'A2' as CrimeId,
+			note: 'A2',
+			isAttack: 'yes',
+			isMainOffender: false,
+			date: '2020-10-03',
+			dateDisclosed: '2020-10-04',
+			paragraph: '1'
+		},
+		{
+			id: 'B' as CrimeId,
+			note: 'B',
+			isAttack: 'no',
+			isMainOffender: false,
+			date: '2020-10-30',
+			dateDisclosed: '2020-11-30',
+			paragraph: '2'
+		}
+	],
+	sentencedCrimes: [
+		{
+			id: 'A1' as CrimeId,
+			note: 'A1',
+			isAttack: 'yes',
+			isMainOffender: false,
+			date: '2020-10-02',
+			dateDisclosed: '2020-10-03',
+			paragraph: '1'
+		}
+	],
+	sentences: [
+		{
+			id: 'R-A1B' as SentenceId,
+			isLegallyForced: false,
+			crimes: ['A1', 'B'] as CrimeId[],
+			dateAnnounced: '2020-12-05'
+		}
+	]
+};
 
-// // TODO: attacks
-// export const testCase11: RawForm = {
-// 	fileId: '11.',
-// 	offender,
-// 	crimes: [
-// 		{
-// 			id: 'A2' as CrimeId,
-// 			note: 'A2',
-// 			isAttack: 'yes',
-// 			isMainOffender: false,
-// 			date: '2018-03-15',
-// 			paragraph: '1'
-// 		}
-// 	],
-// 	sentencedCrimes: [
-// 		{
-// 			id: 'A1' as CrimeId,
-// 			note: 'A1',
-// 			isAttack: 'yes',
-// 			isMainOffender: false,
-// 			date: '2018-03-10',
-// 			paragraph: '1'
-// 		},
-// 		{
-// 			id: 'B' as CrimeId,
-// 			note: 'B',
-// 			isAttack: 'no',
-// 			isMainOffender: false,
-// 			date: '2018-04-30',
-// 			paragraph: '2'
-// 		}
-// 	],
-// 	sentences: [
-// 		{
-// 			id: 'R-A1' as SentenceId,
-// 			isLegallyForced: false,
-// 			crimes: ['A1'] as CrimeId[],
-// 			dateAnnounced: '2018-06-10'
-// 		}
-// 	]
-// };
+export const testCase11: RawForm = {
+	fileId: '11. utoky 2',
+	offender,
+	crimes: [
+		{
+			id: 'A2' as CrimeId,
+			note: 'A2',
+			isAttack: 'yes',
+			isMainOffender: false,
+			date: '2018-03-15',
+			dateDisclosed: '2018-03-18',
+			paragraph: '1'
+		},
+		{
+			id: 'B' as CrimeId,
+			note: 'B',
+			isAttack: 'no',
+			isMainOffender: false,
+			date: '2018-04-30',
+			dateDisclosed: '2018-05-01',
+			paragraph: '2'
+		}
+	],
+	sentencedCrimes: [
+		{
+			id: 'A1' as CrimeId,
+			note: 'A1',
+			isAttack: 'yes',
+			isMainOffender: false,
+			date: '2018-03-10',
+			dateDisclosed: '2018-03-17',
+			paragraph: '1'
+		}
+	],
+	sentences: [
+		{
+			id: 'R-A1' as SentenceId,
+			isLegallyForced: false,
+			crimes: ['A1'] as CrimeId[],
+			dateAnnounced: '2018-06-10'
+		}
+	]
+};
 
-// //TODO: attacks
-// export const testCase12: RawForm = {
-// 	fileId: '12.',
-// 	offender,
-// 	crimes: [
-// 		{
-// 			id: 'A2' as CrimeId,
-// 			note: 'A2',
-// 			isAttack: 'yes',
-// 			isMainOffender: false,
-// 			date: '2020-04-18',
-// 			paragraph: '1'
-// 		}
-// 	],
-// 	sentencedCrimes: [
-// 		{
-// 			id: 'A1' as CrimeId,
-// 			note: 'A1',
-// 			isAttack: 'yes',
-// 			isMainOffender: false,
-// 			date: '2020-03-18',
-// 			paragraph: '1'
-// 		},
-// 		{
-// 			id: 'B' as CrimeId,
-// 			note: 'B',
-// 			isAttack: 'no',
-// 			isMainOffender: false,
-// 			date: '2020-06-06',
-// 			paragraph: '2'
-// 		}
-// 	],
-// 	sentences: [
-// 		{
-// 			id: 'R-A1' as SentenceId,
-// 			isLegallyForced: false,
-// 			crimes: ['A1'] as CrimeId[],
-// 			dateAnnounced: '2020-09-25'
-// 		},
-// 		{
-// 			id: 'R-A1B' as SentenceId,
-// 			isLegallyForced: false,
-// 			crimes: ['B'] as CrimeId[],
-// 			cancelsSentece: 'R-A1' as SentenceId,
-// 			dateAnnounced: '2021-01-05'
-// 		}
-// 	]
-// };
+export const testCase12: RawForm = {
+	fileId: '12. utoky 3',
+	offender,
+	crimes: [
+		{
+			id: 'A2' as CrimeId,
+			note: 'A2',
+			isAttack: 'yes',
+			isMainOffender: false,
+			date: '2020-04-18',
+			dateDisclosed: '2020-04-19',
+			paragraph: '1'
+		}
+	],
+	sentencedCrimes: [
+		{
+			id: 'A1' as CrimeId,
+			note: 'A1',
+			isAttack: 'yes',
+			isMainOffender: false,
+			date: '2020-03-18',
+			dateDisclosed: '2020-04-20',
+			paragraph: '1'
+		},
+		{
+			id: 'B' as CrimeId,
+			note: 'B',
+			isAttack: 'no',
+			isMainOffender: false,
+			date: '2020-06-06',
+			dateDisclosed: '2020-06-07',
+			paragraph: '2'
+		}
+	],
+	sentences: [
+		{
+			id: 'R-A1' as SentenceId,
+			isLegallyForced: false,
+			crimes: ['A1'] as CrimeId[],
+			dateAnnounced: '2020-09-25'
+		},
+		{
+			id: 'R-A1B' as SentenceId,
+			isLegallyForced: false,
+			crimes: ['B'] as CrimeId[],
+			cancelsSentece: 'R-A1' as SentenceId,
+			dateAnnounced: '2020-12-05'
+		}
+	]
+};
 
-// //TODO: attacks
-// export const testCase13: RawForm = {
-// 	fileId: '13.',
-// 	offender,
-// 	crimes: [
-// 		{
-// 			id: 'A2' as CrimeId,
-// 			note: 'A2',
-// 			isAttack: 'yes',
-// 			isMainOffender: false,
-// 			date: '2021-05-10',
-// 			paragraph: '1'
-// 		},
-// 		{
-// 			id: 'A4' as CrimeId,
-// 			note: 'A4',
-// 			isAttack: 'yes',
-// 			isMainOffender: false,
-// 			date: '2021-05-15',
-// 			paragraph: '1'
-// 		},
-// 		{
-// 			id: 'A5' as CrimeId,
-// 			note: 'A5',
-// 			isAttack: 'yes',
-// 			isMainOffender: false,
-// 			date: '2021-05-16',
-// 			paragraph: '1'
-// 		}
-// 	],
-// 	sentencedCrimes: [
-// 		{
-// 			id: 'A1' as CrimeId,
-// 			note: 'A1',
-// 			isAttack: 'yes',
-// 			isMainOffender: false,
-// 			date: '2021-05-09',
-// 			paragraph: '1'
-// 		},
-// 		{
-// 			id: 'A3' as CrimeId,
-// 			note: 'A3',
-// 			isAttack: 'yes',
-// 			isMainOffender: false,
-// 			date: '2021-05-11',
-// 			paragraph: '1'
-// 		}
-// 	],
-// 	sentences: [
-// 		{
-// 			id: 'R-A1A3' as SentenceId,
-// 			isLegallyForced: false,
-// 			crimes: ['A1', 'A3'] as CrimeId[],
-// 			dateAnnounced: '2021-11-04'
-// 		}
-// 	]
-// };
+//TODO: attacks
+export const testCase13: RawForm = {
+	fileId: '13. utoky 4',
+	offender,
+	crimes: [
+		{
+			id: 'A2' as CrimeId,
+			note: 'A2',
+			isAttack: 'yes',
+			isMainOffender: false,
+			date: '2021-05-10',
+			dateDisclosed: '2021-10-04',
+			paragraph: '1'
+		},
+		{
+			id: 'A4' as CrimeId,
+			note: 'A4',
+			isAttack: 'yes',
+			isMainOffender: false,
+			date: '2021-05-15',
+			dateDisclosed: '2021-10-04',
+			paragraph: '1'
+		},
+		{
+			id: 'A5' as CrimeId,
+			note: 'A5',
+			isAttack: 'yes',
+			isMainOffender: false,
+			date: '2021-05-16',
+			dateDisclosed: '2021-10-04',
+			paragraph: '1'
+		}
+	],
+	sentencedCrimes: [
+		{
+			id: 'A1' as CrimeId,
+			note: 'A1',
+			isAttack: 'yes',
+			isMainOffender: false,
+			date: '2021-05-09',
+			dateDisclosed: '2021-8-3',
+			paragraph: '1'
+		},
+		{
+			id: 'A3' as CrimeId,
+			note: 'A3',
+			isAttack: 'yes',
+			isMainOffender: false,
+			date: '2021-05-11',
+			dateDisclosed: '2021-8-3',
+			paragraph: '1'
+		}
+	],
+	sentences: [
+		{
+			id: 'R-A1A3' as SentenceId,
+			isLegallyForced: false,
+			crimes: ['A1', 'A3'] as CrimeId[],
+			dateAnnounced: '2021-11-04'
+		}
+	]
+};
 
 export const testCase14: RawForm = {
 	fileId: '14.',
@@ -759,10 +770,10 @@ export const testCasesObject = {
 	testCase7,
 	testCase8,
 	testCase9,
-	// testCase10,
-	// testCase11,
-	// testCase12,
-	// testCase13,
+	testCase10,
+	testCase11,
+	testCase12,
+	testCase13,
 	testCase14,
 	testCase15,
 	testCase16

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { pipe, D, A, G } from '@mobily/ts-belt';
+import { pipe, D, A, G, F } from '@mobily/ts-belt';
 import type { AttackGroup, RawCrime } from './types';
 
 export function splitAttacksContinuationByDateDisclosed(crimes: RawCrime[]) {
@@ -102,4 +102,8 @@ export const groupAttacksToCrimes = (attacks: RawCrime[]) => {
 		A.flat,
 		A.mapWithIndex(assignColorToGroup)
 	) as AttackGroup[];
+};
+
+export const sortByDate = <TDateObject extends { date?: string }>(values: TDateObject[]) => {
+	return values.sort((a, b) => new Date(a.date ?? '').getTime() - new Date(b.date ?? '').getTime());
 };

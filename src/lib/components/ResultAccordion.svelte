@@ -19,13 +19,13 @@
 <AccordionItem open>
 	<span slot="header"><Heading tag="h4">Výsledek:</Heading></span>
 	<div class="flex justify-center items-center">
+		<Timeline isDisplayed={!isAlertDisplayed} />
 		{#if isAlertDisplayed}
 			<Alert border color={alertColor}>
 				<InfoCircleSolid slot="icon" class="w-4 h-4" />
 				{alertMessage}
 			</Alert>
 		{:else}
-			<Timeline />
 			<div class="flex flex-col gap-2">
 				{#if A.length(resultMessages) > 1}
 					<Heading tag="h6">Patrový rozsudek:</Heading>

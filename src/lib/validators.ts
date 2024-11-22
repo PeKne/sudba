@@ -9,7 +9,7 @@ import type {
 	ValidatedCrime,
 	ValidatedForm
 } from './types';
-import { groupAttacksToCrimes } from './formatters';
+import { groupAttacksToCrimes, sortByDate } from './formatters';
 
 type SenteceErrors = Record<keyof RawSentence, string>;
 type CrimeErrors = Record<keyof RawCrime, string>;
@@ -99,25 +99,34 @@ export const validateCrimes = (crimes: RawCrime[]) => {
 export const cleanFormData = (form: RawForm) => {
 	const sentencedCrimes = form.sentencedCrimes.map((crime, index) => ({
 		...crime,
-		label: `OSK${index + 1}`
+		label: crime.isAttack === 'no' ? `OSK${index + 1}` : `OU${index + 1}`
 	}));
 
-	const attacks = form.crimes
-		.filter((crime) => crime.isAttack !== 'no')
-		.sort(function (crime1, crime2) {
-			return new Date(crime1.date!).getMilliseconds() - new Date(crime2.date!).getMilliseconds();
-		})
-		.map((attack, index) => ({ ...attack, label: `U${index + 1}` }));
+	const sortedCrimes = sortByDate(
+		form.crimes.map((crime, index) => ({
+			...crime,
+			label: crime.isAttack === 'no' ? `SK${index + 1}` : `U${index + 1}`
+		}))
+	);
 
+	const sentencedAttacks = sentencedCrimes
+		.filter((crime) => crime.isAttack !== 'no')
+		.map((attack) => ({ ...attack, wasSentenced: true }));
+	const newAttacks = sortedCrimes
+		.filter((crime) => crime.isAttack !== 'no')
+		.map((attack) => ({ ...attack, wasSentenced: false }));
+
+	const attacks = [...sentencedAttacks, ...newAttacks] as ValidatedCrime[];
+
+	// TODO: sentenced attacks aswell
 	const attackGroups = groupAttacksToCrimes(attacks);
 
 	const resultData = {
 		...form,
 		attacks,
 		attackGroups,
-		crimes: form.crimes
-			.filter((crime) => crime.isAttack === 'no')
-			.map((crime, index) => ({ ...crime, label: `SK${index + 1}` })),
+		firstCrimeDate: sortedCrimes[0]?.date,
+		crimes: sortedCrimes.filter((crime) => crime.isAttack === 'no'),
 		sentences: form.sentences.map((sentence, index) => ({
 			...sentence,
 			label: `R${index + 1}`,

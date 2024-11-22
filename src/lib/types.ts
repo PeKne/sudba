@@ -17,6 +17,7 @@ export type RawCrime = {
 	valueStolen?: number;
 	valueDestroyed?: number;
 	note?: string;
+	wasSentenced?: boolean;
 };
 
 export type RawSentence = {
@@ -54,6 +55,7 @@ export type AttackGroup = {
 };
 
 export type ValidatedForm = {
+	firstCrimeDate: string;
 	attacks: ValidatedCrime[];
 	attackGroups: AttackGroup[];
 	crimes: ValidatedCrime[];

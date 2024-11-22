@@ -44,7 +44,7 @@
 	<SaveBadge />
 	<div class="flex space-x-2 w-full items-center">
 		<Button size="lg" color="primary" on:click={saveCaseToFile}
-			><DownloadSolid class="me-2" /> Uložit</Button
+			><DownloadSolid class="me-2" />Uložit</Button
 		>
 		<Button size="lg" color="primary" on:click={readCaseFromFile}
 			><UploadSolid class="me-2" />Načíst</Button

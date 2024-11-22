@@ -114,7 +114,7 @@ const plotSentences = () => {
 	];
 };
 
-export const plotTimeline = (timelineDiv?: HTMLDivElement) => {
+export const plotTimeline = (timelineDiv?: HTMLDivElement, _formData?: ValidatedForm) => {
 	if (timelineDiv !== undefined) {
 		timelineDiv.firstChild?.remove(); // remove old chart, if any
 		const timelineD3Div = d3

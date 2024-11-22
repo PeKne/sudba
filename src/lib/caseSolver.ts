@@ -20,7 +20,7 @@ type SamostatnyLevel = LevelCommon & {
 type Level = SouhrnLevel | SamostatnyLevel;
 
 //TODO: do not pass sentences on every call
-const getFirstSentenceDate = (
+const getStartDateOfSentenceChain = (
 	sentence: ValidatedSentence,
 	allSetences: ValidatedSentence[]
 ): Date => {
@@ -55,11 +55,17 @@ const formatResultLevelMessage = (level: Level): string => {
 	const formattedCrimes = crimes.map((crime) => crime.label ?? 'UNDEFINED').join(', ');
 
 	if (isSouhrn(level)) {
-		const { canceledSentences } = level;
+		const { canceledSentences = [] } = level;
 
-		const areSentencesPlural = A.length(canceledSentences ?? []) > 1;
+		const areSentencesPlural = A.length(canceledSentences) > 1;
+		const isUhrn =
+			canceledSentences.length === 1 &&
+			canceledSentences[0].crimesData.filter((c) => c.isAttack !== 'yes').length === 0;
+
 		const formattedSentences = canceledSentences?.map((s) => s.label).join(', ') ?? '';
-		return `Souhrný trest ${formattedCrimes} a současného zrušení výroku o trestu z rozsudk${
+		return `${
+			isUhrn ? 'Úhrný' : 'Souhrnný'
+		} trest ${formattedCrimes} a současného zrušení výroku o trestu z rozsudk${
 			areSentencesPlural ? 'ů' : 'u'
 		} ${formattedSentences}`;
 	} else {
@@ -68,9 +74,12 @@ const formatResultLevelMessage = (level: Level): string => {
 };
 
 export const getSolutionLevels = (inputCase: ValidatedForm): Level[] => {
-	const { crimes, sentences } = inputCase;
+	const { crimes, sentences, firstCrimeDate, attacks, attackGroups } = inputCase;
+	console.log('TCL: attackGroups', attackGroups);
 	const sentencesCopy = [...sentences];
 	const result: Level[] = [];
+
+	if (A.isEmpty(crimes) && A.isEmpty(attacks)) return [];
 
 	// TODO: rozdělit činy do skupin podle paragrafu a na ty nahlížet samostatně
 	// pak pro každou skupinu zvlášť:
@@ -79,57 +88,75 @@ export const getSolutionLevels = (inputCase: ValidatedForm): Level[] => {
 	// - vezmi další rozsudek a opakuj předchozí krok
 	// - pokud dojdou rozsudky, a ještě zbývají tresty, jedná se o samotný trest
 
-	let sortedCrimes = crimes.sort((a, b) => a.date?.localeCompare(b.date ?? '') ?? 0);
+	let unsolvedCrimes = [...crimes];
 
-	if (A.isEmpty(sortedCrimes)) return [];
-
-	const dateOfFirstCrime = sortedCrimes[0].date;
+	const dateOfFirstCrime = firstCrimeDate;
 
 	const sortedRelevantSentences = sentencesCopy
 		.sort((a, b) => a.dateAnnounced?.localeCompare(b.dateAnnounced ?? '') ?? 0)
 		.filter((sentence) => new Date(sentence.dateAnnounced!) >= new Date(dateOfFirstCrime));
 
 	sortedRelevantSentences.forEach((sentence) => {
+		console.log('TCL: sentence', sentence);
 		// this solves fake souhrn problem
-		const firstDateOfConnectedSentences = getFirstSentenceDate(sentence, sentencesCopy);
+		const chainStartDate = getStartDateOfSentenceChain(sentence, sentencesCopy);
 
-		const precedingCrimes = sortedCrimes.filter(
-			(crime) => new Date(crime.date) < firstDateOfConnectedSentences
+		const precedingCrimes = unsolvedCrimes.filter((crime) => new Date(crime.date) < chainStartDate);
+
+		// TODO: work with groups instead
+		const [relatedAttackGroups, unrelatedAttackGroups] = A.partition(
+			attackGroups,
+			(group) =>
+				A.intersection(
+					group.attacks.map((a) => a.id),
+					sentence.crimes ?? []
+				).length > 0
 		);
+		console.log('TCL: relatedAttackGroups', relatedAttackGroups);
+		const relatedAttacks = relatedAttackGroups.flatMap((group) => group.attacks);
+
+		// TODO: still use this for those that are not in the relatedAttackGroup
+		// maybe just push all unrelated attack groups?
+		const unrelatedAttacks = unrelatedAttackGroups
+			.flatMap((group) => group.attacks)
+			.filter((crime) => new Date(crime.date) < chainStartDate);
 
 		// if there are no preceding crimes, add the sentence to the last souhrn level
-		if (A.isEmpty(precedingCrimes)) {
-			const lastouhrnLevel = A.reverse(result).find((level) => isSouhrn(level)) as
+		if (A.isEmpty(precedingCrimes) && A.isEmpty(relatedAttacks)) {
+			const lastSouhrnLevel = A.reverse(result).find((level) => isSouhrn(level)) as
 				| SouhrnLevel
 				| undefined;
 
-			const isAlreadyPresent = !!lastouhrnLevel?.canceledSentences.find(
+			const isSentenceChainAlreadySolved = !!lastSouhrnLevel?.canceledSentences.find(
 				(s) => s.id === sentence.id
 			);
 
-			if (!isAlreadyPresent) lastouhrnLevel?.canceledSentences.push(sentence);
+			if (!isSentenceChainAlreadySolved) lastSouhrnLevel?.canceledSentences.push(sentence);
+
+			return;
 		}
 
-		if (A.isNotEmpty(precedingCrimes)) {
-			result.push({
-				crimes: precedingCrimes,
-				canceledSentences: getConnectedSenteces(sentence.id, sentences),
-				__type: 'SOUHRN'
-			});
+		result.push({
+			crimes: [...precedingCrimes, ...relatedAttacks]
+				.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+				.filter((c) => c.wasSentenced !== true),
+			canceledSentences: getConnectedSenteces(sentence.id, sentences),
+			__type: 'SOUHRN'
+		});
 
-			sortedCrimes = F.toMutable(A.sliceToEnd(sortedCrimes, precedingCrimes.length));
-		}
+		unsolvedCrimes = F.toMutable(A.sliceToEnd(unsolvedCrimes, precedingCrimes.length));
 	});
 
-	if (A.isNotEmpty(sortedCrimes)) {
+	if (A.isNotEmpty(unsolvedCrimes)) {
 		const lastLevel: SamostatnyLevel = {
-			crimes: sortedCrimes,
+			crimes: unsolvedCrimes,
 			__type: 'SAMOSTATNY'
 		};
 
 		result.push(lastLevel);
 	}
 
+	console.log('TCL: result', result);
 	return result;
 };
 

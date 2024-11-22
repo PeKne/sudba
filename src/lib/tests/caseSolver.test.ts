@@ -1,6 +1,10 @@
 import { getSolutionLevels, isSouhrn } from '../caseSolver';
 import {
 	testCase1,
+	testCase10,
+	testCase11,
+	testCase12,
+	testCase13,
 	testCase14,
 	testCase15,
 	testCase16,
@@ -134,6 +138,65 @@ describe('getSolutionLevels', () => {
 		const level1 = resultLevels[0];
 		expect(level1.crimes[0].id).toBe('C');
 		expect(level1.__type).toBe('SAMOSTATNY');
+	});
+
+	it(testCase10.fileId, () => {
+		const resultLevels = getTestResultLevels(testCase10);
+
+		expect(resultLevels).toHaveLength(1);
+		const level1 = resultLevels[0];
+		expect(level1.crimes).toHaveLength(2);
+		expect(level1.crimes[0].id).toBe('A2');
+		expect(level1.crimes[1].id).toBe('B');
+
+		if (!isSouhrn(level1)) throw new Error('level should be souhrn!');
+
+		expect(level1.canceledSentences).toHaveLength(1);
+		expect(level1.canceledSentences[0].id).toBe('R-A1B');
+	});
+
+	it(testCase11.fileId, () => {
+		const resultLevels = getTestResultLevels(testCase11);
+
+		expect(resultLevels).toHaveLength(1);
+		const level1 = resultLevels[0];
+		expect(level1.crimes).toHaveLength(2);
+		expect(level1.crimes[0].id).toBe('A2');
+		expect(level1.crimes[1].id).toBe('B');
+		if (!isSouhrn(level1)) throw new Error('level should be souhrn!');
+
+		expect(level1.canceledSentences).toHaveLength(1);
+		expect(level1.canceledSentences[0].id).toBe('R-A1');
+	});
+	it(testCase12.fileId, () => {
+		const resultLevels = getTestResultLevels(testCase12);
+
+		expect(resultLevels).toHaveLength(1);
+		const level1 = resultLevels[0];
+		expect(level1.crimes).toHaveLength(1);
+		expect(level1.crimes[0].id).toBe('A2');
+
+		if (!isSouhrn(level1)) throw new Error('level should be souhrn!');
+
+		expect(level1.canceledSentences).toHaveLength(2);
+		expect(level1.canceledSentences[0].id).toBe('R-A1');
+		expect(level1.canceledSentences[1].id).toBe('R-A1B');
+	});
+
+	it(testCase13.fileId, () => {
+		const resultLevels = getTestResultLevels(testCase13);
+
+		expect(resultLevels).toHaveLength(1);
+		const level1 = resultLevels[0];
+		expect(level1.crimes).toHaveLength(3);
+		expect(level1.crimes[0].id).toBe('A2');
+		expect(level1.crimes[1].id).toBe('A4');
+		expect(level1.crimes[2].id).toBe('A5');
+
+		if (!isSouhrn(level1)) throw new Error('level should be souhrn!');
+
+		expect(level1.canceledSentences).toHaveLength(1);
+		expect(level1.canceledSentences[0].id).toBe('R-A1A3');
 	});
 
 	it(testCase14.fileId, () => {
