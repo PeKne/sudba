@@ -132,7 +132,6 @@ export const plotTimeline = (timelineDiv?: HTMLDivElement, _formData?: Validated
 
 				x: {
 					axis: null,
-					transform: (d) => d3.utcYear.offset(d, 2000 - d.getUTCFullYear()),
 					range: [150 + x, TIMELINE_WIDTH * k + x - 150]
 				},
 				y: { axis: null, domain: [-TIMELINE_HEIGHT / 2, TIMELINE_HEIGHT / 2] },
