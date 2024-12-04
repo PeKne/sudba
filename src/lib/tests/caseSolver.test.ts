@@ -225,4 +225,28 @@ describe('getSolutionLevels', () => {
 		expect(level1.crimes[1].id).toBe('E');
 		expect(level1.__type).toBe('SAMOSTATNY');
 	});
+
+	it(testCaseFixtures.testCase17.fileId, () => {
+		const resultLevels = getTestResultLevels(testCaseFixtures.testCase17);
+
+		expect(resultLevels.length).toBe(1);
+		const level1 = resultLevels[0];
+		expect(level1.crimes.length).toBe(1);
+		expect(level1.crimes[0].id).toBe('D');
+
+		if (!isSouhrn(level1)) throw new Error('level should be souhrn!');
+		expect(level1.canceledSentences.length).toBe(1);
+		expect(level1.canceledSentences[0].id).toBe('R-E');
+	});
+
+	it(testCaseFixtures.testCase24.fileId, () => {
+		const resultLevels = getTestResultLevels(testCaseFixtures.testCase24);
+
+		expect(resultLevels).toHaveLength(1);
+		const level1 = resultLevels[0];
+		expect(level1.crimes.length).toBe(2);
+		expect(level1.crimes[0].id).toBe('D');
+		expect(level1.crimes[1].id).toBe('E');
+		expect(level1.__type).toBe('SAMOSTATNY');
+	});
 });

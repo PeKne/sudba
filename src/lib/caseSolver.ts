@@ -58,9 +58,17 @@ const formatResultLevelMessage = (level: Level): string => {
 		const { canceledSentences = [] } = level;
 
 		const areSentencesPlural = A.length(canceledSentences) > 1;
+
+		const sentencedAttackGroups = pipe(
+			canceledSentences,
+			A.map((sentence) => sentence.crimesData),
+			A.flat,
+			A.filter((c) => c.isAttack === 'yes')
+		);
+
 		const isUhrn =
 			canceledSentences.length === 1 &&
-			canceledSentences[0].crimesData.filter((c) => c.isAttack !== 'yes').length === 0;
+			canceledSentences[0].crimesData.filter((c) => c.isAttack === 'yes');
 
 		const formattedSentences = canceledSentences?.map((s) => s.label).join(', ') ?? '';
 		return `${
@@ -103,7 +111,6 @@ export const getSolutionLevels = (inputCase: ValidatedForm): Level[] => {
 
 		const precedingCrimes = unsolvedCrimes.filter((crime) => new Date(crime.date) < chainStartDate);
 
-		// TODO: work with groups instead
 		const [relatedAttackGroups, unrelatedAttackGroups] = A.partition(
 			attackGroups,
 			(group) =>
@@ -112,7 +119,7 @@ export const getSolutionLevels = (inputCase: ValidatedForm): Level[] => {
 					sentence.crimes ?? []
 				).length > 0
 		);
-		console.log('TCL: relatedAttackGroups', relatedAttackGroups);
+
 		const relatedAttacks = relatedAttackGroups.flatMap((group) => group.attacks);
 
 		// TODO: still use this for those that are not in the relatedAttackGroup

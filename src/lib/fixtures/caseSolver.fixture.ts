@@ -745,5 +745,354 @@ export const testCaseFixtures: Record<string, RawForm> = {
 				dateAnnounced: '2021-12-12'
 			}
 		]
+	},
+	testCase17: {
+		fileId: '17.',
+		offender,
+		crimes: [
+			{
+				id: 'D' as CrimeId,
+				note: 'D',
+				isAttack: 'no',
+				isMainOffender: false,
+				date: '2020-05-04',
+				paragraph: '1'
+			}
+		],
+		sentencedCrimes: [
+			{
+				id: 'A' as CrimeId,
+				note: 'A',
+				isAttack: 'no',
+				isMainOffender: false,
+				date: '2019-09-04',
+				paragraph: '1'
+			},
+			{
+				id: 'B' as CrimeId,
+				note: 'B',
+				isAttack: 'no',
+				isMainOffender: false,
+				date: '2019-10-04',
+				paragraph: '1'
+			},
+			{
+				id: 'C' as CrimeId,
+				note: 'C',
+				isAttack: 'no',
+				isMainOffender: false,
+				date: '2019-10-05',
+				paragraph: '1'
+			},
+			{
+				id: 'E' as CrimeId,
+				note: 'E',
+				isAttack: 'no',
+				isMainOffender: false,
+				date: '2020-10-08',
+				paragraph: '1'
+			}
+		],
+		sentences: [
+			{
+				id: 'R-A' as SentenceId,
+				isLegallyForced: false,
+				crimes: ['A'] as CrimeId[],
+				dateAnnounced: '2019-12-05'
+			},
+			{
+				id: 'R-ABC' as SentenceId,
+				isLegallyForced: false,
+				crimes: ['B', 'C'] as CrimeId[],
+				cancelsSentece: 'R-A' as SentenceId,
+				dateAnnounced: '2020-07-03'
+			},
+			{
+				id: 'R-E' as SentenceId,
+				isLegallyForced: false,
+				crimes: ['E'] as CrimeId[],
+				dateAnnounced: '2020-10-15'
+			}
+		]
+	},
+	testCase18: {
+		fileId: '18.',
+		offender,
+		crimes: [
+			{
+				id: 'A2' as CrimeId,
+				note: 'A2',
+				isAttack: 'yes',
+				isMainOffender: false,
+				date: '2021-01-06',
+				dateDisclosed: '2021-01-9',
+				paragraph: '1'
+			}
+		],
+		sentencedCrimes: [
+			{
+				id: 'A1' as CrimeId,
+				note: 'A1',
+				isAttack: 'yes',
+				isMainOffender: false,
+				date: '2021-01-02',
+				dateDisclosed: '2021-01-9',
+				paragraph: '1'
+			},
+			{
+				id: 'B' as CrimeId,
+				note: 'B',
+				isAttack: 'no',
+				isMainOffender: false,
+				date: '2021-01-03',
+				paragraph: '1'
+			}
+		],
+		sentences: [
+			{
+				id: 'R-A1B' as SentenceId,
+				isLegallyForced: false,
+				crimes: ['A1', 'B'] as CrimeId[],
+				dateAnnounced: '2021-01-10'
+			}
+		]
+	},
+	testCase19: {
+		fileId: '19.',
+		offender,
+		crimes: [
+			{
+				id: 'C' as CrimeId,
+				note: 'C',
+				isAttack: 'no',
+				isMainOffender: false,
+				date: '2020-06-07',
+				paragraph: '1'
+			}
+		],
+		sentencedCrimes: [
+			{
+				id: 'A' as CrimeId,
+				note: 'A',
+				isAttack: 'no',
+				isMainOffender: false,
+				date: '2020-03-05',
+				paragraph: '1'
+			},
+			{
+				id: 'B' as CrimeId,
+				note: 'B',
+				isAttack: 'no',
+				isMainOffender: false,
+				date: '2020-06-04',
+				paragraph: '1'
+			}
+		],
+		sentences: [
+			{
+				id: 'R-A' as SentenceId,
+				isLegallyForced: false,
+				crimes: ['A'] as CrimeId[],
+				dateAnnounced: '2020-10-10'
+			},
+			{
+				id: 'R-B' as SentenceId,
+				isLegallyForced: false,
+				cancelsSentece: 'R-A' as SentenceId,
+				crimes: ['B'] as CrimeId[],
+				dateAnnounced: '2020-10-15'
+			}
+		]
+	},
+	testCase20: {
+		fileId: '20.',
+		offender,
+		crimes: [
+			{
+				id: 'A2' as CrimeId,
+				note: 'A2',
+				isAttack: 'yes',
+				isMainOffender: false,
+				date: '2020-08-05',
+				dateDisclosed: '2020-10-14',
+				paragraph: '1'
+			},
+			{
+				id: 'C' as CrimeId,
+				note: 'C',
+				isAttack: 'no',
+				isMainOffender: false,
+				date: '2021-03-03',
+				paragraph: '1'
+			}
+		],
+		sentencedCrimes: [
+			{
+				id: 'A1' as CrimeId,
+				note: 'A1',
+				isAttack: 'yes',
+				isMainOffender: false,
+				date: '2020-08-04',
+				dateDisclosed: '2020-10-14',
+				paragraph: '1'
+			},
+			{
+				id: 'B' as CrimeId,
+				note: 'B',
+				isAttack: 'no',
+				isMainOffender: false,
+				date: '2020-10-04',
+				paragraph: '1'
+			}
+		],
+		sentences: [
+			{
+				id: 'R-A1' as SentenceId,
+				isLegallyForced: false,
+				crimes: ['A1'] as CrimeId[],
+				dateAnnounced: '2020-10-15'
+			},
+			{
+				id: 'R-A1B' as SentenceId,
+				isLegallyForced: false,
+				cancelsSentece: 'R-A1' as SentenceId,
+				crimes: ['B'] as CrimeId[],
+				dateAnnounced: '2021-05-05'
+			}
+		]
+	},
+	testCase23: {
+		fileId: '23.',
+		offender,
+		crimes: [
+			{
+				id: 'A2' as CrimeId,
+				note: 'A2',
+				isAttack: 'yes',
+				isMainOffender: false,
+				date: '2022-07-08',
+				dateDisclosed: '2022-10-9',
+				paragraph: '1'
+			},
+			{
+				id: 'D' as CrimeId,
+				note: 'D',
+				isAttack: 'no',
+				isMainOffender: false,
+				date: '2023-04-05',
+				paragraph: '1'
+			}
+		],
+		sentencedCrimes: [
+			{
+				id: 'A1' as CrimeId,
+				note: 'A1',
+				isAttack: 'yes',
+				isMainOffender: false,
+				date: '2022-07-07',
+				dateDisclosed: '2022-10-9',
+				paragraph: '1'
+			},
+			{
+				id: 'B' as CrimeId,
+				note: 'B',
+				isAttack: 'no',
+				isMainOffender: false,
+				date: '2022-08-04',
+				paragraph: '1'
+			},
+			{
+				id: 'C' as CrimeId,
+				note: 'C',
+				isAttack: 'no',
+				isMainOffender: false,
+				date: '2022-11-22',
+				paragraph: '1'
+			}
+		],
+		sentences: [
+			{
+				id: 'R-A1B' as SentenceId,
+				isLegallyForced: false,
+				crimes: ['A1', 'B'] as CrimeId[],
+				dateAnnounced: '2022-10-10'
+			},
+			{
+				id: 'R-C' as SentenceId,
+				isLegallyForced: false,
+				crimes: ['C'] as CrimeId[],
+				dateAnnounced: '2022-12-05'
+			}
+		]
+	},
+	testCase24: {
+		fileId: '24.',
+		offender,
+		crimes: [
+			{
+				id: 'D' as CrimeId,
+				note: 'D',
+				isAttack: 'no',
+				isMainOffender: false,
+				date: '2021-05-05',
+				paragraph: '1'
+			},
+			{
+				id: 'E' as CrimeId,
+				note: 'E',
+				isAttack: 'no',
+				isMainOffender: false,
+				date: '2021-08-09',
+				paragraph: '1'
+			}
+		],
+		sentencedCrimes: [
+			{
+				id: 'A' as CrimeId,
+				note: 'A',
+				isAttack: 'no',
+				isMainOffender: false,
+				date: '2020-11-18',
+				paragraph: '1'
+			},
+			{
+				id: 'B' as CrimeId,
+				note: 'B',
+				isAttack: 'no',
+				isMainOffender: false,
+				date: '2021-02-01',
+				paragraph: '1'
+			},
+			{
+				id: 'C' as CrimeId,
+				note: 'C',
+				isAttack: 'no',
+				isMainOffender: false,
+				date: '2021-02-05',
+				paragraph: '1'
+			}
+		],
+		sentences: [
+			{
+				id: 'R-A' as SentenceId,
+				isLegallyForced: false,
+				crimes: ['A'] as CrimeId[],
+				dateAnnounced: '2021-02-28'
+			},
+			{
+				id: 'R-AB' as SentenceId,
+				isLegallyForced: false,
+				crimes: ['B'] as CrimeId[],
+				cancelsSentece: 'R-A' as SentenceId,
+				dateAnnounced: '2021-06-17'
+			},
+			{
+				id: 'R-ABC' as SentenceId,
+				isLegallyForced: false,
+				crimes: ['C'] as CrimeId[],
+				cancelsSentece: 'R-AB' as SentenceId,
+				dateAnnounced: '2021-10-14'
+			}
+		]
 	}
 };
