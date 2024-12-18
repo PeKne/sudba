@@ -6,6 +6,7 @@
 	import ValidatedInput from '../atoms/ValidatedInput.svelte';
 	import type { AttackOption, RawCrime } from '../../types';
 	import ValidatedSelect from '../atoms/ValidatedSelect.svelte';
+	import { paragraphOptions } from '../../data/paragraphOptions';
 
 	export let wasSentenced = false;
 	export let crime: RawCrime;
@@ -52,12 +53,6 @@
 			? $formErrorsStore.sentencedCrimes[crime.id]
 			: $formErrorsStore.crimes[crime.id]) ?? {};
 	$: textColorClass = wasSentenced ? 'text-black' : 'text-red-500';
-
-	$: paragraphOptions = [
-		{ value: '1', name: 'paragraf 1' },
-		{ value: '2', name: 'paragraf 2' },
-		{ value: '3', name: 'paragraf 3' }
-	];
 
 	$: attackOptions = [
 		{ value: 'no', name: 'Ne' },
